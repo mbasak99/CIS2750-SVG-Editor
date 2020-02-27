@@ -42,3 +42,27 @@ input[type=submit], button {
         width: 100% !important;
     }
 }
+
+/* TABLE FORMATTING */
+table {
+    width: 100%; /* This allows for the .table-title to work */
+}
+
+.table-title { 
+    text-align: center;
+    column-span: all; /* Allows it to be as wide as all the columns */
+}
+
+.file-log, .view-panel {
+    border: 5px solid gray;
+    text-align: center;
+}
+
+.view-panel {
+    overflow: scroll; /* If too many items in this table row, adds a scroll bar */
+}
+
+thead tbody td {
+    color: yellowgreen;
+    text-align: center;
+}
