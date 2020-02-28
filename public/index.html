@@ -4,7 +4,7 @@
     <title>SVG Image Viewer</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="CHANGE ME">
+    <meta name="description" content="This is an SVG image editor created by Monark Basak for an academic project which integrated code we continuously built upon.">
     <meta name="keywords" content="SVG Editor">
     <meta name="author" content="Monark Basak">
     <!-- Load jquery, bootstrap -->
@@ -43,7 +43,7 @@
     <!-- IDEAS:
             File log panel is the first to open up, if image from file long panel is selected collapse it and expand SVG view panel. -->
     <p>
-        <table>
+        <table class="svg-table">
             <thead>
                 <tr>
                 <th colspan="7" class="table-title file-log">File Log Panel</th>
@@ -83,10 +83,10 @@
         <h3>Upload a file here</h3>
         <form id="upload-svg" method="post" action="/upload" enctype="multipart/form-data">
             <label>Select an SVG to upload here: </label>
-            <input type="file" name="svgIMG">
+            <input type="file" name="svgIMG" accept=".svg">
             <br>
-            <!-- <input type="submit" value="Upload SVG"> -->
-            <button type="submit">Upload SVG</button>
+            <input type="submit" value="Upload SVG">
+            <!-- <button type="submit">Upload SVG</button> -->
         </form>
     </p>
 

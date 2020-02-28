@@ -2,7 +2,7 @@
 
 // C library API
 const ffi = require('ffi-napi');
-const ref = require('ref'); // Used to make pointer variables for functions
+// const ref = require('ref'); // Used to make pointer variables for functions
 
 // Express App (Routes)
 const express = require("express");
@@ -77,7 +77,64 @@ app.get('/uploads/:name', function (req, res) {
 
 //******************** Your code goes here ******************** 
 
-//C 
+//Get list of files
+app.get('/allFiles', function (req, res) {
+  let fileObjToSend = []; // empty list that will contain the details of each file
+
+  // reads the name of all the files in the uploads folder
+  fs.readdir(path.join(__dirname + '/uploads/'), (err, files) => {
+
+    if (err) {
+      return console.log("ERROR: Couldn't read the files. " + err);
+    }
+
+    files.forEach((file) => {
+      // temp code, need to export these files to the index.js
+      console.log(file);
+
+      // use fs.stat to get info like file size
+      let fileInfo = fs.statSync(__dirname + '/uploads/' + file);
+      // console.log(fileInfo);
+
+      // Use parser to get info from SVG
+      var CLibrary = ffi.Library(__dirname + '/parser/libsvgparse.so', {
+        'getJSONofSVG': ['string', ['string']] // [return type, [param type]]
+      });
+
+      let returnVal = CLibrary.getJSONofSVG(__dirname + '/uploads/' + file);
+      let svgObject = JSON.parse(returnVal);
+
+      if (svgObject === null) {
+        console.log('getJSONofSVG returned null. ' + svgObject);
+      } else {
+        console.log('getJSONofSVG returned: ' + JSON.stringify(svgObject));
+
+        // create 
+        var data = {
+          fileName: file,
+          fileSize: Math.round(fileInfo.size / 1000),
+          numRect: svgObject.numRect,
+          numCirc: svgObject.numCirc,
+          numPath: svgObject.numPaths,
+          numGroup: svgObject.numGroups
+        }
+
+        fileObjToSend.push(data); // adds the object to the list
+      }
+
+      // console.log('\nfileObjToSend contains: ' + JSON.stringify(fileObjToSend));
+
+    });
+
+    console.log('\nfileObjToSend contains: ' + JSON.stringify(fileObjToSend));
+
+    // Export files to client side so the site can be populated with the files
+    res.send({
+      list: fileObjToSend
+    });
+  });
+});
+
 
 //Sample endpoint
 app.get('/someendpoint', function (req, res) {
