@@ -44,7 +44,47 @@ $(document).ready(function () {
     dataType: 'json',
     url: '/allFiles', // The server path
     success: function (data) { // Got the info
-      console.log(data.list);
+      console.log(data);
+
+      // update the table with the data I just received
+      $('.log-data-body').html(function (content) {
+        for (const element of data.list) {
+          // use innerHTML for td and outerHTML when handling another SVG
+          content += '<tr class="log-data">';
+          console.log(element);
+
+          // var image = $.get({ // get image from server
+          //   url: '/tableImage/' + element.fileName, //The server endpoint we are connecting to
+          //   dataType: 'xml', //Data type - we will use JSON for almost everything 
+          //   success: function (data) {
+          //     console.log('HELLOOOOOOOOOOOOOOOOOOOOOOOOOOOO');
+          //     // console.log(data);
+          //     console.log(`<img src="${data}" inner alt="Image of ${element.fileName}">`);
+          //     // return `<img src="${data}" alt="Image of ${element.fileName}>`;
+          //     return data;
+          //   },
+          //   fail: function (error) {
+          //     console.log('Error: ' + error);
+          //     return 'Image could not be found';
+          //   }
+          // }); // add img sourcer here
+
+          // table data
+          content += `<td><img src="../uploads/${element.fileName}" alt="Image of ${element.fileName}"></td>`; // Show image
+          // console.log(JSON.stringify(image));
+          content += `<td><a href="../uploads/${element.fileName}" download>${element.fileName}</td>`;
+          content += '<td>' + element.fileSize + ' <strong>KB</strong>' + '</td>';
+          content += '<td>' + element.numRect + '</td>';
+          content += '<td>' + element.numCirc + '</td>';
+          content += '<td>' + element.numPath + '</td>';
+          content += '<td>' + element.numGroup + '</td>';
+
+          content += '</tr>';
+        }
+
+        return content;
+      })
+
     },
     fail: function (error) {
       $('#blah').html('Error: ' + error);

@@ -44,8 +44,18 @@ input[type=submit], button {
 }
 
 /* TABLE FORMATTING */
-table {
+table,
+td, 
+tbody {
     width: 100%; /* This allows for the .table-title to work */
+    border: 3px solid black;
+    text-align: center;
+}
+
+tbody,
+td {
+    padding: 10px;
+    border: 1px solid black;
 }
 
 .table-title { 
@@ -53,10 +63,11 @@ table {
     column-span: all; /* Allows it to be as wide as all the columns */
 }
 
-.file-log, .view-panel {
+/* .file-log, .view-panel {
     border: 5px solid gray;
+    border-radius: 15px;
     text-align: center;
-}
+} */
 
 .view-panel {
     overflow: scroll; /* If too many items in this table row, adds a scroll bar */
@@ -65,4 +76,23 @@ table {
 thead tbody td {
     color: yellowgreen;
     text-align: center;
+}
+
+.log-data {
+    overflow: scroll; /* If too many items in this table row, adds a scroll bar */
+}
+
+.log-data td {
+    text-align: center;
+}
+
+.log-data td img {
+    width: 200px;
+    height: auto;
+}
+
+.log-data-body {
+    overflow: auto;
+    height: 600px;
+    /* display: table-cell; */
 }

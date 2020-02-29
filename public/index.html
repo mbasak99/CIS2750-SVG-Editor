@@ -1,24 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>SVG Image Viewer</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="This is an SVG image editor created by Monark Basak for an academic project which integrated code we continuously built upon.">
+    <meta name="description"
+        content="This is an SVG image editor created by Monark Basak for an academic project which integrated code we continuously built upon.">
     <meta name="keywords" content="SVG Editor">
     <meta name="author" content="Monark Basak">
     <!-- Load jquery, bootstrap -->
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous">
+    </script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
+    </script>
     <!-- Custom CSS -->
     <link rel="stylesheet" type="text/css" href="/style.css">
     <!-- Custom CSS End -->
 </head>
+
 <body>
     <h3>Download test</h3>
-    If the A3 stub is running and simple.gpx exists in the uploads/ directory on the server, then clicking on the link below will download it from the server.<br>
+    If the A3 stub is running and simple.gpx exists in the uploads/ directory on the server, then clicking on the link
+    below will download it from the server.<br>
     <a href="rects.svg">rects.svg</a>
     <p></p>
     <img src="rects.svg">
@@ -26,12 +36,11 @@
     <hr>
     <div id="blah">I am blah</div>
     <hr>
-    <form ref='someform'
-            id='someform'>
-            <div class="form-group">
-                <label for="entryBox">Last Name</label>
-                <input type="text" class="form-control" id="entryBox" value="Value" placeholder="Placeholder">
-            </div>
+    <form ref='someform' id='someform'>
+        <div class="form-group">
+            <label for="entryBox">Last Name</label>
+            <input type="text" class="form-control" id="entryBox" value="Value" placeholder="Placeholder">
+        </div>
         <div class="form-group">
             <input type='submit' class="btn btn-secondary">
         </div>
@@ -46,39 +55,35 @@
         <table class="svg-table">
             <thead>
                 <tr>
-                <th colspan="7" class="table-title file-log">File Log Panel</th>
-            </tr>
+                    <th colspan="7" class="table-title file-log">File Log Panel</th>
+                </tr>
             <tbody>
                 <!-- <colgroup> -->
-                    <td class="file-log"><strong>Image</strong></td>
-                    <td class="file-log"><strong>File name (click to download)</strong></td>
-                    <td class="file-log"><strong>File size</strong></td>
-                    <td class="file-log"><strong># of Rectangles</strong></td>
-                    <td class="file-log"><strong># of Circles</strong></td>
-                    <td class="file-log"><strong># of Paths</strong></td>
-                    <td class="file-log"><strong># of Groups</strong></td>
-                    <!-- </colgroup> -->
-                </tbody>
-                <tbody>
-                    <td class="log-data">Data here</td>
-                    <td class="log-data">Data here</td>
-                    <td class="log-data">Data here</td>
-                    <td class="log-data">Data here</td>
-                    <td class="log-data">Data here</td>
-                    <td class="log-data">Data here</td>
-                    <td class="log-data">Data here</td>
-                </tbody>
-                <tr>
-                    <th colspan="7" class="table-title view-panel">SVG View Panel</th>
+                <td class="file-log"><strong>Image</strong></td>
+                <td class="file-log"><strong>File name (click to download)</strong></td>
+                <td class="file-log"><strong>File size</strong></td>
+                <td class="file-log"><strong># of Rectangles</strong></td>
+                <td class="file-log"><strong># of Circles</strong></td>
+                <td class="file-log"><strong># of Paths</strong></td>
+                <td class="file-log"><strong># of Groups</strong></td>
+                <!-- </colgroup> -->
+            </tbody>
+            <tbody class="log-data-body">
+                <tr class="log-data">
+                    <td>there are no SVG elements</td>
                 </tr>
-                <tbody>
-                    <td colspan="7" class="view-panel">Please select an image to view</td>
-                </tbody>
+            </tbody>
+            <tr>
+                <th colspan="7" class="table-title view-panel">SVG View Panel</th>
+            </tr>
+            <tbody>
+                <td colspan="7" class="view-panel">Please select an image to view</td>
+            </tbody>
             </thead>
         </table>
     </p>
-        
-        <!-- Upload SVG images -->
+
+    <!-- Upload SVG images -->
     <p>
         <h3>Upload a file here</h3>
         <form id="upload-svg" method="post" action="/upload" enctype="multipart/form-data">
@@ -90,14 +95,21 @@
         </form>
     </p>
 
+    <!-- <p>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroupFileAddon01">Upload</span>
+            </div>
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" id="inputGroupFile01"
+                    aria-describedby="inputGroupFileAddon01" accept=".svg">
+                <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
+            </div>
+        </div>
+    </p> -->
+
     <!-- Leave me at the bottom of body -->
     <script src="/index.js"></script>
 </body>
+
 </html>
-
-
-
-
-
-
-

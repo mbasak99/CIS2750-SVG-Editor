@@ -65,8 +65,11 @@ app.post('/upload', function (req, res) {
 
 //Respond to GET requests for files in the uploads/ directory
 app.get('/uploads/:name', function (req, res) {
+  console.log('entered');
   fs.stat('uploads/' + req.params.name, function (err, stat) {
     if (err == null) {
+      console.log(path.join(__dirname + '/uploads/' + req.params.name));
+      // res.send(path.join(__dirname + '/uploads/' + req.params.name));
       res.sendFile(path.join(__dirname + '/uploads/' + req.params.name));
     } else {
       console.log('Error in file downloading route: ' + err);
@@ -132,6 +135,22 @@ app.get('/allFiles', function (req, res) {
     res.send({
       list: fileObjToSend
     });
+  });
+});
+
+// get path links for displaying the image and download link in the table
+//Respond to GET requests for files in the uploads/ directory
+app.get('/tableImage/:name', function (req, res) {
+  console.log('entered');
+  fs.stat('uploads/' + req.params.name, function (err, stat) {
+    if (err == null) {
+      console.log(path.join(__dirname + '/uploads/' + req.params.name));
+      res.send(path.join(__dirname + '/uploads/' + req.params.name));
+      // res.sendFile(path.join(__dirname + '/uploads/' + req.params.name));
+    } else {
+      console.log('Error in file downloading route: ' + err);
+      res.send('');
+    }
   });
 });
 
