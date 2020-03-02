@@ -129,6 +129,12 @@ $(document).ready(function () {
                   circList: array
                   pathList: array
                   groupList: array */
+              
+              // include view of the SVG
+              content += 
+              `<tr>
+                <td colspan="7" class="view-panel"><img src="../uploads/${selectedVal}" alt="Image of ${selectedVal}"></td>
+              </tr>`;
 
               // title and desc
               content +=
