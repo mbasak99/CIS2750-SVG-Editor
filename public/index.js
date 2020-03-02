@@ -45,35 +45,34 @@ $(document).ready(function () {
     url: '/allFiles', // The server path
     success: function (data) { // Got the info
       console.log(data);
+      console.log("data");
 
       // update the table with the data I just received
       $('.log-data-body').html(function (content) {
+
+        content += '<tr>';
+
+        //headers
+        content += '<td class="file-log"><strong>Image (click to download)</strong></td>'
+        content += '<td class="file-log"><strong>File name (click to download)</strong></td>'
+        content += '<td class="file-log"><strong>File size (KB)</strong></td>'
+        content += '<td class="file-log"><strong># of Rectangles</strong></td>'
+        content += '<td class="file-log"><strong># of Circles</strong></td>'
+        content += '<td class="file-log"><strong># of Paths</strong></td>'
+        content += '<td class="file-log"><strong># of Groups</strong></td>'
+
+        content += '</tr>';
+
         for (const element of data.list) {
           // use innerHTML for td and outerHTML when handling another SVG
           content += '<tr class="log-data">';
-          console.log(element);
-
-          // var image = $.get({ // get image from server
-          //   url: '/tableImage/' + element.fileName, //The server endpoint we are connecting to
-          //   dataType: 'xml', //Data type - we will use JSON for almost everything 
-          //   success: function (data) {
-          //     console.log('HELLOOOOOOOOOOOOOOOOOOOOOOOOOOOO');
-          //     // console.log(data);
-          //     console.log(`<img src="${data}" inner alt="Image of ${element.fileName}">`);
-          //     // return `<img src="${data}" alt="Image of ${element.fileName}>`;
-          //     return data;
-          //   },
-          //   fail: function (error) {
-          //     console.log('Error: ' + error);
-          //     return 'Image could not be found';
-          //   }
-          // }); // add img sourcer here
+          // console.log("YEEETT" + element);
+          // console.log("YEEETT" + JSON.stringify(element));
 
           // table data
-          content += `<td><img src="../uploads/${element.fileName}" alt="Image of ${element.fileName}"></td>`; // Show image
-          // console.log(JSON.stringify(image));
+          content += `<td><a href="../uploads/${element.fileName}" download><img src="../uploads/${element.fileName}" alt="Image of ${element.fileName}"></a></td>`; // Show image
           content += `<td><a href="../uploads/${element.fileName}" download>${element.fileName}</td>`;
-          content += '<td>' + element.fileSize + ' <strong>KB</strong>' + '</td>';
+          content += '<td><strong>' + element.fileSize + ' KB</strong>' + '</td>';
           content += '<td>' + element.numRect + '</td>';
           content += '<td>' + element.numCirc + '</td>';
           content += '<td>' + element.numPath + '</td>';
@@ -81,17 +80,166 @@ $(document).ready(function () {
 
           content += '</tr>';
         }
+        // Allow user to upload SVG images section
+        content +=
+          `<tr>
+          <td colspan="7">
+            <h3>Upload a file here</h3>
+            <form id="upload-svg" method="post" action="/upload" enctype="multipart/form-data">
+              <label>Select an SVG to upload here: </label>
+              <input type="file" name="svgIMG" accept=".svg">
+              <br>
+              <input type="submit" value="Upload SVG">
+            </form>
+          </td>
+        </tr>`;
 
         return content;
-      })
+      });
 
+      // Need to update the values in the drop down
+      $('#svgSelector').html(function (content) {
+        content += '<option>Please select an image to view</option>';
+        for (const element of data.list) {
+          content += `<option>${element.fileName}</option>`;
+        }
+
+        return content;
+      });
+
+      // Need to get the index of chosen value in drop down
+      $('#svgSelector').change(function () {
+        var selectedVal = $(this).children('option:selected').val();
+        console.log('You have chosen: ' + selectedVal);
+
+        // Update the SVG View Panel with SVG summaries
+        $.ajax({
+          type: 'get',
+          dataType: 'json',
+          url: '/viewSVG/' + selectedVal,
+          success: function (data) {
+            console.log('Dabberz');
+            console.log(data);
+
+            $('.view-data-body').html(function (content) {
+              /* Returned objects contains:
+                  title: string
+                  desc: string
+                  rectList: array
+                  circList: array
+                  pathList: array
+                  groupList: array */
+
+              // title and desc
+              content +=
+                `<tr>
+                <td class="view-panel title"><strong>Title</strong></td>
+                <td colspan="2" class="view-panel desc"><strong>Description</strong></td>
+              </tr>`;
+
+              // title and desc values
+              content += '<tr>';
+
+              if (data.title == "") { // there's no title
+                content += '<td class="title"><i>This SVG does not have a title</i></td>'
+              } else {
+                content += `<td class="title">${data.title}</td>`;
+              }
+
+              if (data.desc == "") { // there's no desc
+                content += '<td colspan="2" class="desc"><i>This SVG does not have a description</i></td>';
+              } else {
+                content += `<td colspan="2" class="desc">${data.desc}</td>`;
+              }
+              content += '</tr>';
+
+              // component, summary and other attributes
+              content +=
+                `<tr>
+                <td id="component"><strong>Component</strong></td>
+                <td id="summary"><strong>Summary</strong></td>
+                <td id="otherAttr"><strong>Other Attributes</strong></td>
+              </tr>`;
+
+              // fill in rectangle info
+              var rectNum = 1;
+              for (const rect of data.rectList) { // traversing each index of rectList each index is an object
+                // console.log("Here we go" + rect.units);
+                // console.log("Here we go" + rect.x);
+                // console.log("Here we go 2" + JSON.stringify(element.x));
+                let units = rect.units;
+                content += '<tr class="view-data">';
+                content += `<td>Rectangle ${rectNum}</td>`;
+                content += `<td><p>Upper left corner: x = ${rect.x}, y = ${rect.y} Width: ${rect.w}${units}, Height: ${rect.h}${units}</p></td>`;
+                content += `<td>${rect.numAttr}</td>`;
+                content += '</tr>';
+                rectNum++;
+              }
+
+              // fill in circle info
+              var circNum = 1;
+              for (const circle of data.circList) {
+                let units = circle.units;
+                content += '<tr class="view-data">';
+                content += `<td>Circle ${circNum}</td>`;
+                content += `<td><p>Centre: x = ${circle.cx}, y = ${circle.cy} Radius: ${circle.r}${units}</p></td>`;
+                content += `<td>${circle.numAttr}</td>`;
+                content += '</tr>';
+                circNum++;
+              }
+
+              //fill in path info
+              var pathNum = 1;
+              for (const path of data.pathList) {
+                // console.log(path.d.length );
+                content += '<tr class="view-data">';
+                content += `<td>Path ${pathNum}</td>`;
+                
+                if (path.d.length > 64) {
+                  let newStr = path.d.slice(0,65);
+                  content += `<td><p>Path data = ${newStr}<strong>...</strong></p></td>`;
+                } else {
+                  content += `<td><p>Path data = ${path.d}</p></td>`;
+                }
+                
+                content += `<td>${path.numAttr}</td>`;
+                content += '</tr>';
+                pathNum++;
+              }
+
+              // fill in group info
+              var groupNum = 1;
+              for (const group of data.groupList) {
+                content += '<tr class="view-data">';
+                content += `<td>Group ${groupNum}</td>`;
+                content += `<td><p>${group.children} children elements</p></td>`;
+                content += `<td>${group.numAttr}</td>`;
+                content += '</tr>';
+                groupNum++;
+              }
+
+              return content;
+            });
+          },
+          fail: function (error) {
+            console.log("ERR in SVG Panel summary " + error);
+          }
+        });
+      });
+
+      console.log('Successfully loaded any images.');
     },
     fail: function (error) {
-      $('#blah').html('Error: ' + error);
+      console.log('Failed to load any images. ' + error);
     }
   });
 
-  // Need to create function to modify the table so it's dynamically allocating table data when the HTML is done loading
-  // var table = $(".svg-table").
+  // Need to display the selected SVG in the SVG View Panel
+  // $('#svgSelector').change(function () {
+  //   // alert('I have been clicked');
+  //   let selected = $(this).children("options:selected").val();
+  //   console.log('I have been clicked');
+  //   // $( this ).slideUp();
+  // });
 
 });

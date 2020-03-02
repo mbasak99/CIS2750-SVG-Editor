@@ -20,6 +20,8 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
     </script>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
+    <!-- Load open sans font family -->
     <!-- Custom CSS -->
     <link rel="stylesheet" type="text/css" href="/style.css">
     <!-- Custom CSS End -->
@@ -53,46 +55,59 @@
             File log panel is the first to open up, if image from file long panel is selected collapse it and expand SVG view panel. -->
     <p>
         <table class="svg-table">
-            <thead>
-                <tr>
-                    <th colspan="7" class="table-title file-log">File Log Panel</th>
-                </tr>
-            <tbody>
-                <!-- <colgroup> -->
-                <td class="file-log"><strong>Image</strong></td>
-                <td class="file-log"><strong>File name (click to download)</strong></td>
-                <td class="file-log"><strong>File size</strong></td>
-                <td class="file-log"><strong># of Rectangles</strong></td>
-                <td class="file-log"><strong># of Circles</strong></td>
-                <td class="file-log"><strong># of Paths</strong></td>
-                <td class="file-log"><strong># of Groups</strong></td>
-                <!-- </colgroup> -->
-            </tbody>
+            <!-- <thead> -->
+            <tr>
+                <th colspan="7" class="table-title">File Log Panel</th>
+            </tr>
+            <!-- </thead> -->
             <tbody class="log-data-body">
+                <tr>
+                    <td class="file-log"><strong>Image (click to download)</strong></td>
+                    <td class="file-log"><strong>File name (click to download)</strong></td>
+                    <td class="file-log"><strong>File size (KB)</strong></td>
+                    <td class="file-log"><strong># of Rectangles</strong></td>
+                    <td class="file-log"><strong># of Circles</strong></td>
+                    <td class="file-log"><strong># of Paths</strong></td>
+                    <td class="file-log"><strong># of Groups</strong></td>
+                </tr>
                 <tr class="log-data">
                     <td>there are no SVG elements</td>
                 </tr>
             </tbody>
-            <tr>
-                <th colspan="7" class="table-title view-panel">SVG View Panel</th>
-            </tr>
-            <tbody>
-                <td colspan="7" class="view-panel">Please select an image to view</td>
-            </tbody>
-            </thead>
         </table>
-    </p>
-
-    <!-- Upload SVG images -->
-    <p>
-        <h3>Upload a file here</h3>
-        <form id="upload-svg" method="post" action="/upload" enctype="multipart/form-data">
-            <label>Select an SVG to upload here: </label>
-            <input type="file" name="svgIMG" accept=".svg">
-            <br>
-            <input type="submit" value="Upload SVG">
-            <!-- <button type="submit">Upload SVG</button> -->
-        </form>
+        <table class="svg-table">
+            <tr>
+                <th colspan="7" class="table-title">SVG View Panel</th>
+            </tr>
+            <tr>
+                <td colspan="7">
+                    <select id='svgSelector'>
+                        <option>Please select an image to view</option>
+                    </select>
+                </td>
+            </tr>
+            <!-- <thead> -->
+            <tbody class="view-data-body">
+                <tr>
+                    <td class="view-panel title"><strong>Title</strong></td>
+                    <td colspan="2" class="view-panel desc"><strong>Description</strong></td>
+                </tr>
+                <tr>
+                    <td class="title">Placeholder</td>
+                    <td colspan="2" class="desc">Placeholder</td>
+                </tr>
+                <tr>
+                    <td id="component"><strong>Component</strong></td>
+                    <td id="summary"><strong>Summary</strong></td>
+                    <td id="otherAttr"><strong>Other Attributes</strong></td>
+                </tr>
+                <tr class="view-data">
+                    <td>Nothing to see here</td>
+                    <td>Nothing to see here</td>
+                    <td>Nothing to see here</td>
+                </tr>
+            </tbody>
+        </table>
     </p>
 
     <!-- <p>

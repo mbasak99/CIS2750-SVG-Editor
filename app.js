@@ -80,6 +80,12 @@ app.get('/uploads/:name', function (req, res) {
 
 //******************** Your code goes here ******************** 
 
+// Use parser to get info from SVG
+const CLibrary = ffi.Library(__dirname + '/parser/libsvgparse.so', {
+  'getJSONofSVG': ['string', ['string']], // [return type, [param type]]
+  'getJSONforViewPanel': ['string', ['string']]
+});
+
 //Get list of files
 app.get('/allFiles', function (req, res) {
   let fileObjToSend = []; // empty list that will contain the details of each file
@@ -98,11 +104,6 @@ app.get('/allFiles', function (req, res) {
       // use fs.stat to get info like file size
       let fileInfo = fs.statSync(__dirname + '/uploads/' + file);
       // console.log(fileInfo);
-
-      // Use parser to get info from SVG
-      var CLibrary = ffi.Library(__dirname + '/parser/libsvgparse.so', {
-        'getJSONofSVG': ['string', ['string']] // [return type, [param type]]
-      });
 
       let returnVal = CLibrary.getJSONofSVG(__dirname + '/uploads/' + file);
       let svgObject = JSON.parse(returnVal);
@@ -154,6 +155,19 @@ app.get('/tableImage/:name', function (req, res) {
   });
 });
 
+app.get('/viewSVG/:name', function (req, res) {
+  var filename = req.params.name;
+  console.log(filename); // test
+  try {
+    let returnVal = CLibrary.getJSONforViewPanel(__dirname + '/uploads/' + filename);
+    // console.log(returnVal);
+    let summaryOfSVG = JSON.parse(returnVal);
+    console.log(JSON.stringify(summaryOfSVG));
+    res.send(summaryOfSVG);
+  } catch (err) {
+    console.log("Error in viewSVG: " + err);
+  }
+});
 
 //Sample endpoint
 app.get('/someendpoint', function (req, res) {

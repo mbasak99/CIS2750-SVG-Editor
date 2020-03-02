@@ -1,16 +1,22 @@
+:root {
+    font-family: 'Open Sans';
+}
+
 html {
     width: 60%;
     height: 100%;
     min-height: 100%;
     margin: 0 auto;
     font-size: 16px;
-    background-color: #FFFFFF;
+    /* background-color: #FFFFFF; */
+    /* background: #11111a; */
 }
 body {
     height: 100%;
     min-height: 100%;
     line-height: 1.75;
     background-color: #FFFFFF;
+    padding: 0;
 }
 a:link:hover {
     -webkit-transition: all 0.3s ease;
@@ -43,34 +49,49 @@ input[type=submit], button {
     }
 }
 
+/* SCROLL BAR FORMATTING (NOT WORKING THO) */
+body::-webkit-scrollbar {
+    width: 0.25rem;
+}
+
+body::-webkit-scrollbar-track {
+    background: #1e1e24;
+}
+
+body::-webkit-scrollbar-thumb {
+    background: #6649b8;
+}
+
+/* Upload SVG section */
+input[button] {
+    border-radius: 15px;
+}
+
 /* TABLE FORMATTING */
-table,
-td, 
-tbody {
+table/* ,
+td */ {
     width: 100%; /* This allows for the .table-title to work */
     border: 3px solid black;
     text-align: center;
 }
 
-tbody,
 td {
-    padding: 10px;
+    padding: 9px;
     border: 1px solid black;
 }
 
 .table-title { 
     text-align: center;
     column-span: all; /* Allows it to be as wide as all the columns */
+    border: 3px solid black;
 }
 
-/* .file-log, .view-panel {
-    border: 5px solid gray;
-    border-radius: 15px;
-    text-align: center;
-} */
+.title {
+    width: 33%;
+}
 
-.view-panel {
-    overflow: scroll; /* If too many items in this table row, adds a scroll bar */
+.desc {
+    width: 67%;
 }
 
 thead tbody td {
@@ -78,9 +99,9 @@ thead tbody td {
     text-align: center;
 }
 
-.log-data {
-    overflow: scroll; /* If too many items in this table row, adds a scroll bar */
-}
+/* .log-data {
+    overflow: scroll;
+} */
 
 .log-data td {
     text-align: center;
@@ -92,7 +113,24 @@ thead tbody td {
 }
 
 .log-data-body {
-    overflow: auto;
+    overflow-y: auto;
     height: 600px;
-    /* display: table-cell; */
+    display: block;
+}
+
+.log-data-body .log-data:hover {
+    background-color: darksalmon;
+}
+
+#component,
+#otherAttr {
+    width: 20%;
+}
+
+#summary {
+    width: 80%;
+}
+
+.view-data td {
+    word-wrap: normal;
 }
