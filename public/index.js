@@ -89,13 +89,18 @@ $(document).ready(function () {
               <label>Select an SVG to upload here: </label>
               <input type="file" name="svgIMG" accept=".svg">
               <br>
-              <input type="submit" value="Upload SVG">
+              <input id="submitBtn" type="submit" value="Upload SVG">
             </form>
           </td>
         </tr>`;
 
         return content;
       });
+
+      // $('#upload-svg').submit(function () {
+      //   alert('DABBERZZZ');
+      //   console.log('STOP!!!');
+      // });
 
       // Need to update the values in the drop down
       $('#svgSelector').html(function (content) {
@@ -111,6 +116,11 @@ $(document).ready(function () {
       $('#svgSelector').change(function () {
         var selectedVal = $(this).children('option:selected').val();
         console.log('You have chosen: ' + selectedVal);
+        // console.log('You have chosen: ' + $(this).selectedIndex);
+
+        if (selectedVal == 'Please select an image to view') { // does nothing is user switches back to invalid index
+          return;
+        }
 
         // Update the SVG View Panel with SVG summaries
         $.ajax({
@@ -147,13 +157,13 @@ $(document).ready(function () {
               content += '<tr>';
 
               if (data.title == "") { // there's no title
-                content += '<td class="title"><i>This SVG does not have a title</i></td>'
+                content += '<td class="title"><i>(EMPTY)</i></td>'
               } else {
                 content += `<td class="title">${data.title}</td>`;
               }
 
               if (data.desc == "") { // there's no desc
-                content += '<td colspan="2" class="desc"><i>This SVG does not have a description</i></td>';
+                content += '<td colspan="2" class="desc"><i>(EMPTY)</i></td>';
               } else {
                 content += `<td colspan="2" class="desc">${data.desc}</td>`;
               }
@@ -224,6 +234,13 @@ $(document).ready(function () {
                 groupNum++;
               }
 
+              // create a show attributes button
+              if (data.rectList.length || data.circList.length || data.pathList.length || data.groupList.length) { // there must be elements in order to show attributes
+                content += createShowAttr('exists', data);
+              } /* else {
+                content += createShowAttr(null);
+              } */
+
               return content;
             });
           },
@@ -240,12 +257,24 @@ $(document).ready(function () {
     }
   });
 
-  // Need to display the selected SVG in the SVG View Panel
-  // $('#svgSelector').change(function () {
-  //   // alert('I have been clicked');
-  //   let selected = $(this).children("options:selected").val();
-  //   console.log('I have been clicked');
-  //   // $( this ).slideUp();
-  // });
+  
 
 });
+
+function createShowAttr(type, data) {
+  var dropDownData;
+
+  if (type == null) {
+
+  } else {
+    dropDownData += '<tr class="view-data">';
+    dropDownData += `<td colspan="7">`;
+    dropDownData += '<select id="showAttr">';
+    dropDownData += "<option>Please select an element's attribute to show</option>";
+    dropDownData += '</select>';
+    dropDownData += '</td>';
+    dropDownData += '</tr>';
+  }
+
+  return dropDownData;
+}

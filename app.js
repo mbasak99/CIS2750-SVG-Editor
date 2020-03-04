@@ -9,6 +9,8 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const fileUpload = require('express-fileupload');
+// const popup = require('popups');
+
 
 app.use(fileUpload());
 app.use(express.static(path.join(__dirname + '/uploads')));
@@ -46,12 +48,19 @@ app.get('/index.js', function (req, res) {
 //Respond to POST requests that upload files to uploads/ directory
 app.post('/upload', function (req, res) {
   // var svg_image = req.files.svgIMG;
+
   if (!req.files) {
     // console.log(req.files);
     return res.status(400).send('No files were uploaded.');
   }
 
   let uploadFile = req.files.svgIMG;
+
+  if (uploadFile == null) { // check if no files were sent in
+    res.redirect('/');
+    res.status(500);
+    return /* res.status(400).send('No files were uploaded.') */;
+  }
 
   // Use the mv() method to place the file somewhere on your server
   uploadFile.mv('uploads/' + uploadFile.name, function (err) {
@@ -131,6 +140,10 @@ app.get('/allFiles', function (req, res) {
     });
 
     console.log('\nfileObjToSend contains: ' + JSON.stringify(fileObjToSend));
+    
+    if (fileObjToSend.length === 0) { // no files
+      console.log('Howdy do');
+    }
 
     // Export files to client side so the site can be populated with the files
     res.send({
@@ -157,7 +170,7 @@ app.get('/tableImage/:name', function (req, res) {
 
 app.get('/viewSVG/:name', function (req, res) {
   var filename = req.params.name;
-  console.log(filename); // test
+  console.log("WOW" + filename); // test
   try {
     let returnVal = CLibrary.getJSONforViewPanel(__dirname + '/uploads/' + filename);
     // console.log(returnVal);
