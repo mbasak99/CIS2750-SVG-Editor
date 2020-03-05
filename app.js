@@ -62,6 +62,8 @@ app.post('/upload', function (req, res) {
     return /* res.status(400).send('No files were uploaded.') */;
   }
 
+  /* CHECK IF THE UPLOAD FILE IS VALID HERE */
+
   // Use the mv() method to place the file somewhere on your server
   uploadFile.mv('uploads/' + uploadFile.name, function (err) {
     if (err) {
@@ -90,7 +92,7 @@ app.get('/uploads/:name', function (req, res) {
 //******************** Your code goes here ******************** 
 
 // Use parser to get info from SVG
-const CLibrary = ffi.Library(__dirname + '/parser/libsvgparse.so', {
+const CLibrary = ffi.Library(__dirname + '/libsvgparse.so', {
   'getJSONofSVG': ['string', ['string']], // [return type, [param type]]
   'getJSONforViewPanel': ['string', ['string']]
 });
