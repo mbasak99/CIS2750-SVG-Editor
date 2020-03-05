@@ -35,6 +35,8 @@ void getRectsInGroups(List *allRects, List *listOfGroups);
 char *getJSONofSVG (char *file);
 char *getJSONforViewPanel (char *file);
 char *getJSONforOtherAttr(char *file, char *elementType, int elemIndex);
+char *updateTitleOfSVG(char *file, char *newTitle);
+char *updateDescOfSVG(char *file, char *newDesc);
 void fillInValues(elementType elemType, void *element, char *key, char *value);
 void updateGroupAttr(SVGimage *image, Attribute *newAttr, int elemIndex);
 void updatePathAttr(SVGimage *image, Attribute *newAttr, int elemIndex);

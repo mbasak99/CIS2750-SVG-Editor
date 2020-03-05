@@ -876,46 +876,6 @@ bool writeSVGimage(SVGimage* image, char* filename)
 
     setupDoc(image, &root_node, &doc); // Need to send address of root and doc to modify these pointers
 
-    // if (doc == NULL) printf("WHOT\n");
-    // if (root_node == NULL) printf("WHOT 22222\n");
-
-    // doc = xmlNewDoc(BAD_CAST "1.0"); // Need BAD_CAST otherwise compiler throws bare warnings n shiiii
-    // root_node = xmlNewNode(NULL, BAD_CAST "svg");
-    
-    // if (image->namespace != NULL && strlen(image->namespace) > 0) { // there's a namespace add it to the doc
-    //     xmlNewProp(root_node, BAD_CAST "xmlns", BAD_CAST image->namespace);
-    // }
-
-    // xmlDocSetRootElement(doc, root_node);
-
-    // /* SVG's children */
-    // if (image->title != NULL && strlen(image->title) > 0) {
-    //     xmlNewChild(root_node, NULL, BAD_CAST "title", BAD_CAST image->title);
-    // }
-    // if (image->description != NULL && strlen(image->description) > 0) {
-    //     xmlNewChild(root_node, NULL, BAD_CAST "desc", BAD_CAST image->description);
-    // }
-    // if (image->otherAttributes->length) {
-    //     attrToDoc(image->otherAttributes, root_node);
-    // }
-    // if (image->rectangles->length) {
-    //     rectToDoc(image->rectangles, root_node);
-    // }
-    // if (image->circles->length) {
-    //     circleToDoc(image->circles, root_node);
-    // }
-    // if (image->paths->length) {
-    //     pathToDoc(image->paths, root_node);
-    // }
-    // if (image->groups->length) { // Thought my groupParser was wrong, (it's not) problem is with how I'm writing the groups to file/terminal
-    //     // xmlNode *xmlGroupNode = xmlNewChild(root_node, NULL, BAD_CAST "g", NULL);
-    //     groupToDoc(image->groups, root_node);
-    // }
-
-    /* 
-     * Dumping document to stdio or file
-     */
-
     // int argc = 1; // This helps the xmlSaveFormatFileEnc print to terminal
 
     // if (xmlSaveFormatFileEnc(argc > 1 ? "test" : "-", doc, "UTF-8", 1) == -1) { // MAKE SURE TO CHECK IF filename is still NULL in main
@@ -1467,12 +1427,12 @@ Circle* JSONtoCircle(const char* svgString)
 ******************************************************
 */
 
-/* A3 Functions */
+/* A3 Functions START */
 
 // need this function to 
 char *getJSONofSVG (char *file)
 {
-    SVGimage *image = createSVGimage(file);
+    SVGimage *image = createValidSVGimage(file, "parser/bin/svg.xsd");
     char *stringToReturn;
 
     if (image != NULL) {
@@ -1526,7 +1486,7 @@ char *getJSONforViewPanel (char *file)
 
 char *getJSONforOtherAttr(char *file, char *elementType, int elemIndex)
 {
-    SVGimage *image = createValidSVGimage(file, "../");
+    SVGimage *image = createValidSVGimage(file, "parser/bin/svg.xsd");
     char *strToReturn = (char *)calloc(5, sizeof(char));
     strcpy(strToReturn, "null");
 
@@ -1573,6 +1533,83 @@ char *getJSONforOtherAttr(char *file, char *elementType, int elemIndex)
     }
 
     return strToReturn;
+}
+
+// Update the image's title, using the 
+char *updateTitleOfSVG(char *file, char *newTitle)
+{
+    SVGimage *image = createSVGimage(file);
+    char *returnStatus = (char *)calloc(23, sizeof(char));
+    strcpy(returnStatus, "Title failed to update");
+
+    if (image != NULL) {
+
+        if (strlen(newTitle) > 255) {
+
+            strncpy(image->title, newTitle, 255);
+            image->title[255] = '\0';
+
+        } else if (newTitle == NULL || strlen(newTitle) == 0) {
+
+            strcpy(image->title, "");
+
+        } else {
+
+            strcpy(image->title, newTitle);
+
+        }
+
+        // return returnStatus;
+        if (writeSVGimage(image, file)) { // the image written is valid, then return success
+            free(returnStatus);
+            returnStatus = (char *)calloc(27, sizeof(char));
+            strcpy("Title successfully updated");
+        }
+    }
+
+    if (image != NULL) {
+        deleteSVGimage(image);
+    }
+
+    return returnStatus;
+}
+
+char *updateDescOfSVG(char *file, char *newDesc) 
+{
+    SVGimage *image = createSVGimage(file);
+    char *returnStatus = (char *)calloc(29, sizeof(char));
+    strcpy(returnStatus, "Description failed to update");
+
+    if (image != NULL) {
+
+        if (strlen(newDesc) > 255) {
+
+            strncpy(image->description, newDesc, 255);
+            image->description[255] = '\0';
+
+        } else if (newDesc == NULL || strlen(newDesc) == 0) {
+
+            strcpy(image->description, "");
+
+        } else {
+
+            strcpy(image->description, newDesc);
+
+        }
+
+        // return returnStatus;
+        if (writeSVGimage(image, file)) { // the image written is valid, then return success
+            free(returnStatus);
+            returnStatus = (char *)calloc(33, sizeof(char));
+            strcpy("Description successfully updated");
+        }
+    }
+
+    if (image != NULL) {
+        deleteSVGimage(image);
+    }
+
+    return returnStatus;
 }
 
 // char *validateSVGforServer(char *file)

@@ -212,7 +212,7 @@ $(document).ready(function () {
                 content += `<td>Path ${pathNum}</td>`;
                 
                 if (path.d.length > 64) {
-                  let newStr = path.d.slice(0,65);
+                  let newStr = path.d.slice(0,65); // goes from index 0 to 64
                   content += `<td><p>Path data = ${newStr}<strong>...</strong></p></td>`;
                 } else {
                   content += `<td><p>Path data = ${path.d}</p></td>`;
@@ -264,13 +264,53 @@ $(document).ready(function () {
 function createShowAttr(type, data) {
   var dropDownData;
 
-  if (type == null) {
+  if (type == null) { // no elements to display the attributes of
+    dropDownData += '<tr class="view-data">';
+    dropDownData += `<td colspan="7">`;
+    dropDownData += '<select id="showAttr">';
+    dropDownData += "<option>There are no elements to display the attributes of</option>";
+    dropDownData += '</select>';
+    dropDownData += '</td>';
+    dropDownData += '</tr>';
 
-  } else {
+    // display the drop down menu
+    $("#showAttr").prop("disabled", true);
+
+  } else { // there are at least 
     dropDownData += '<tr class="view-data">';
     dropDownData += `<td colspan="7">`;
     dropDownData += '<select id="showAttr">';
     dropDownData += "<option>Please select an element's attribute to show</option>";
+  
+    // do <option></option> per attr shown of each element (probably in a for loop) and don't add to list if it has no 
+
+    // rect, circ, path, group
+
+    //rectangles
+    for (let i = 1; i <= data.rectList.length; i++) {
+      if (data.rectList[i - 1].numAttr > 0) { // only display elements in the drop down if they have other attributes
+        dropDownData += `<option>Rectangle ${i}</option>`;
+      }
+    }
+
+    for (let i = 1; i <= data.circList.length; i++) {
+      if (data.circList[i - 1].numAttr > 0) { // only display elements in the drop down if they have other attributes
+        dropDownData += `<option>Circle ${i}</option>`;
+      }
+    }
+
+    for (let i = 1; i <= data.pathList.length; i++) {
+      if (data.pathList[i - 1].numAttr > 0) { // only display elements in the drop down if they have other attributes
+        dropDownData += `<option>Path ${i}</option>`;
+      }
+    }
+
+    for (let i = 1; i <= data.groupList.length; i++) {
+      if (data.groupList[i - 1].numAttr > 0) { // only display elements in the drop down if they have other attributes
+        dropDownData += `<option>Group ${i}</option>`;
+      }
+    }
+
     dropDownData += '</select>';
     dropDownData += '</td>';
     dropDownData += '</tr>';
