@@ -1563,7 +1563,7 @@ char *updateTitleOfSVG(char *file, char *newTitle)
         if (writeSVGimage(image, file)) { // the image written is valid, then return success
             free(returnStatus);
             returnStatus = (char *)calloc(27, sizeof(char));
-            strcpy("Title successfully updated");
+            strcpy(returnStatus, "Title successfully updated");
         }
     }
 
@@ -1601,7 +1601,7 @@ char *updateDescOfSVG(char *file, char *newDesc)
         if (writeSVGimage(image, file)) { // the image written is valid, then return success
             free(returnStatus);
             returnStatus = (char *)calloc(33, sizeof(char));
-            strcpy("Description successfully updated");
+            strcpy(returnStatus, "Description successfully updated");
         }
     }
 

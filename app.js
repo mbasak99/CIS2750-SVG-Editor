@@ -94,7 +94,8 @@ app.get('/uploads/:name', function (req, res) {
 // Use parser to get info from SVG
 const CLibrary = ffi.Library(__dirname + '/libsvgparse.so', {
   'getJSONofSVG': ['string', ['string']], // [return type, [param type]]
-  'getJSONforViewPanel': ['string', ['string']]
+  'getJSONforViewPanel': ['string', ['string']],
+  'getJSONforOtherAttr': ['string', ['string', 'string', 'int']]
 });
 
 //Get list of files
@@ -123,6 +124,7 @@ app.get('/allFiles', function (req, res) {
         console.log('getJSONofSVG returned null. ' + svgObject);
       } else {
         console.log('getJSONofSVG returned: ' + JSON.stringify(svgObject));
+        // console.log('getJSONofSVG returned: ' + JSON.parse(svgObject));
 
         // create 
         var data = {
@@ -168,6 +170,29 @@ app.get('/tableImage/:name', function (req, res) {
       res.send('');
     }
   });
+});
+
+// get other attributes of sent in element
+app.get('/getOtherAttrs', function (req, res) {
+  // console.log('Inside getOtherAttrs, received: ' + req.query.element + " " + req.query.elemIndex);
+  console.log('Inside getOtherAttrs, received: ' + req.query.elementObj.elemType + " index: " + req.query.elementObj.index);
+  var elemType = req.query.elementObj.elemType;
+  var elemIndex = req.query.elementObj.index;
+  var fileName = req.query.elementObj.fileName;
+
+  try {
+    var dirToIMG = path.join(__dirname + '/uploads/' + fileName);
+    // console.log("Dir is: " + __dirname + '/uploads/' + fileName);
+    console.log("Dir is: " + dirToIMG);
+    var returnVal = CLibrary.getJSONforOtherAttr(dirToIMG, elemType, elemIndex);
+    console.log(`Return of getJSONforOtherAttr: ${returnVal}`);
+    if (returnVal != null) {
+      res.send(returnVal);
+    }
+  } catch (err) {
+    console.log('Error in getOtherAttrs ' + err);
+    return res.status(500).send(err);
+  }
 });
 
 app.get('/viewSVG/:name', function (req, res) {
