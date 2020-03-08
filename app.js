@@ -204,10 +204,18 @@ app.get('/getOtherAttrs', function (req, res) {
 });
 
 // sending new title to be updated in SVG itself
-app.post('/updateTitle', function (res, req) {
+app.get('/updateTitle', function (req, res) {
   try {
-    if (res.query.title != null) { // user actually wanted to change something
+    var title = req.query.title;
+    var file = path.join(__dirname + '/uploads/' + req.query.file);
+    // console.log("Received the title: " + title);
+    if (title != null) { // user actually wanted to change something
+      console.log("Received the title: " + title);
+      console.log("Filename is: " + file);
+      var returnVal = CLibrary.updateTitleOfSVG(file, title);
+      console.log('Return value from updateTitle is: ' + returnVal);
 
+      res.send(returnVal);
     }
   } catch (err) {
     console.log("Error in updateTitle: " + err);
@@ -215,6 +223,24 @@ app.post('/updateTitle', function (res, req) {
 });
 
 // sending new desc to be updated in SVG itself
+// sending new title to be updated in SVG itself
+app.get('/updateDesc', function (req, res) {
+  try {
+    var desc = req.query.desc;
+    var file = path.join(__dirname + '/uploads/' + req.query.file);
+    // console.log("Received the title: " + title);
+    if (desc != null) { // user actually wanted to change something
+      console.log("Received the desc: " + desc);
+      console.log("Filename is: " + file);
+      var returnVal = CLibrary.updateDescOfSVG(file, desc);
+      console.log('Return value from updateDesc is: ' + returnVal);
+
+      res.send(returnVal);
+    }
+  } catch (err) {
+    console.log("Error in updateDesc: " + err);
+  }
+});
 
 app.get('/viewSVG/:name', function (req, res) {
   var filename = req.params.name;

@@ -190,13 +190,13 @@ $(document).ready(function () {
               if (data.title == "") { // there's no title
                 content += '<td class="title"><i>(EMPTY)</i></td>'
               } else {
-                content += `<td class="title">${data.title}</td>`;
+                content += `<td class="title"><p>${data.title}</p></td>`;
               }
 
               if (data.desc == "") { // there's no desc
                 content += '<td colspan="2" class="desc"><i>(EMPTY)</i></td>';
               } else {
-                content += `<td colspan="2" class="desc">${data.desc}</td>`;
+                content += `<td colspan="2" class="desc"><p>${data.desc}</p></td>`;
               }
               content += '</tr>';
 
@@ -498,13 +498,73 @@ function editTitle() {
   // alert('WOWZERSSSSSSSSSSSSSSS');
   var inputVal = $('#edit-title').val();
   alert(inputVal);
+  if (inputVal.length > 255) { // if the string the user entered is greater than the specs allows truncate the extra
+    console.log("Title will be truncated: " + inputVal.slice(0, 255));
+    if (confirm("Title will be truncated to: " + inputVal.slice(0, 255))) {
+      console.log("Sending data to server now.");
+    } else {
+      console.log("Data not sent to the server.");
+      return;
+    }
+  } else {
+    console.log("Title will remain the unaltered, you entered " + '"' + inputVal + '"');
+  }
 
+  var filename = $('#svgSelector').children('option:selected').val();
+  // send the data to the server that will call the C function
+  $.ajax({
+    type: 'get', // POST Request
+    dataType: 'json',
+    url: '/updateTitle',
+    data: {
+      title: inputVal,
+      file: filename
+    },
+    success: function (data) {
+      alert("You have successfully updated the title for the chosen SVG");
+      location.reload(true);
+    },
+    fail: function (err) {
+      console.log("updateTitle in server failed to update properly! Err: " + err);
+    }
+  });
+  console.log("went past wtf");
 }
 
 // edit desc
 function editDesc() {
   var inputVal = $('#edit-desc').val();
   alert(inputVal);
+  if (inputVal.length > 255) { // if the string the user entered is greater than the specs allows truncate the extra
+    console.log("Desc will be truncated: " + inputVal.slice(0, 255));
+    if (confirm("Desc will be truncated to: " + inputVal.slice(0, 255))) {
+      console.log("Sending data to server now.");
+    } else {
+      console.log("Data not sent to the server.");
+      return;
+    }
+  } else {
+    console.log("Desc will remain the unaltered, you entered " + '"' + inputVal + '"');
+  }
+
+  var filename = $('#svgSelector').children('option:selected').val();
+  // send the data to the server that will call the C function
+  $.ajax({
+    type: 'get', // POST Request
+    dataType: 'json',
+    url: '/updateDesc',
+    data: {
+      desc: inputVal,
+      file: filename
+    },
+    success: () => {
+      alert("You have successfully updated the desc for the chosen SVG");
+      location.reload(true);
+    },
+    fail: function (err) {
+      console.log("updateDesc in server failed to update properly! Err: " + err);
+    }
+  });
 }
 
 // Get the other attributes from the element selected in the drop down menu

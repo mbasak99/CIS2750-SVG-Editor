@@ -137,8 +137,14 @@ thead tbody td {
     width: 80%;
 }
 
-.view-data td {
-    word-wrap: normal;
+.view-data {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.desc p,
+.title p {
+    word-wrap: break-word;
 }
 
 .view-panel img {
