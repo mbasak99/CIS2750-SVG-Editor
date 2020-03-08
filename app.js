@@ -22,6 +22,16 @@ const JavaScriptObfuscator = require('javascript-obfuscator');
 // Important, pass in port as in `npm run dev 1234`, do not change
 const portNum = process.argv[2];
 
+// Use parser to get info from SVG
+const CLibrary = ffi.Library(__dirname + '/libsvgparse.so', {
+  'getJSONofSVG': ['string', ['string']], // [return type, [param type]]
+  'getJSONforViewPanel': ['string', ['string']],
+  'getJSONforOtherAttr': ['string', ['string', 'string', 'int']],
+  'validateSVGforServer': ['string', ['string']],
+  'updateTitleOfSVG': ['string', ['string', 'string']],
+  'updateDescOfSVG': ['string', ['string', 'string']]
+});
+
 // Send HTML at root, do not change
 app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname + '/public/index.html'));
@@ -62,12 +72,17 @@ app.post('/upload', function (req, res) {
     return /* res.status(400).send('No files were uploaded.') */;
   }
 
-  /* CHECK IF THE UPLOAD FILE IS VALID HERE */
-
   // Use the mv() method to place the file somewhere on your server
   uploadFile.mv('uploads/' + uploadFile.name, function (err) {
     if (err) {
       return res.status(500).send(err);
+    }
+
+      /* CHECK IF THE UPLOAD FILE IS VALID HERE */
+    var isFileValid = CLibrary.validateSVGforServer();
+
+    if (!isFileValid) { // if file isn't valid remove it
+      return res.status(400).send("Invalid file upload");
     }
 
     res.redirect('/');
@@ -90,13 +105,6 @@ app.get('/uploads/:name', function (req, res) {
 });
 
 //******************** Your code goes here ******************** 
-
-// Use parser to get info from SVG
-const CLibrary = ffi.Library(__dirname + '/libsvgparse.so', {
-  'getJSONofSVG': ['string', ['string']], // [return type, [param type]]
-  'getJSONforViewPanel': ['string', ['string']],
-  'getJSONforOtherAttr': ['string', ['string', 'string', 'int']]
-});
 
 //Get list of files
 app.get('/allFiles', function (req, res) {
@@ -194,6 +202,19 @@ app.get('/getOtherAttrs', function (req, res) {
     return res.status(500).send(err);
   }
 });
+
+// sending new title to be updated in SVG itself
+app.post('/updateTitle', function (res, req) {
+  try {
+    if (res.query.title != null) { // user actually wanted to change something
+
+    }
+  } catch (err) {
+    console.log("Error in updateTitle: " + err);
+  }
+});
+
+// sending new desc to be updated in SVG itself
 
 app.get('/viewSVG/:name', function (req, res) {
   var filename = req.params.name;

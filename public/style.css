@@ -15,7 +15,8 @@ body {
     height: 100%;
     min-height: 100%;
     line-height: 1.75;
-    background-color: #FFFFFF;
+    /* background-color: #FFFFFF; */
+    background: #0a0024;
     margin: 10px;
     padding: 0;
 }
@@ -48,6 +49,10 @@ input[type=submit], button {
         font-size: 12px !important;
         width: 100% !important;
     }
+}
+
+#site-title {
+    color: white;
 }
 
 /* SCROLL BAR FORMATTING (NOT WORKING THO) */
@@ -138,5 +143,6 @@ thead tbody td {
 
 .view-panel img {
     width: 100%;
+    max-width: 750px;
     height: auto;
 }

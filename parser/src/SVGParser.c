@@ -1539,8 +1539,8 @@ char *getJSONforOtherAttr(char *file, char *elementType, int elemIndex)
 char *updateTitleOfSVG(char *file, char *newTitle)
 {
     SVGimage *image = createSVGimage(file);
-    char *returnStatus = (char *)calloc(23, sizeof(char));
-    strcpy(returnStatus, "Title failed to update");
+    char *returnStatus = (char *)calloc(27, sizeof(char));
+    strcpy(returnStatus, "\"Title failed to update\"");
 
     if (image != NULL) {
 
@@ -1562,8 +1562,8 @@ char *updateTitleOfSVG(char *file, char *newTitle)
         // return returnStatus;
         if (writeSVGimage(image, file)) { // the image written is valid, then return success
             free(returnStatus);
-            returnStatus = (char *)calloc(27, sizeof(char));
-            strcpy(returnStatus, "Title successfully updated");
+            returnStatus = (char *)calloc(31, sizeof(char));
+            strcpy(returnStatus, "\"Title successfully updated\"");
         }
     }
 
@@ -1577,8 +1577,8 @@ char *updateTitleOfSVG(char *file, char *newTitle)
 char *updateDescOfSVG(char *file, char *newDesc) 
 {
     SVGimage *image = createSVGimage(file);
-    char *returnStatus = (char *)calloc(29, sizeof(char));
-    strcpy(returnStatus, "Description failed to update");
+    char *returnStatus = (char *)calloc(33, sizeof(char));
+    strcpy(returnStatus, "\"Description failed to update\"");
 
     if (image != NULL) {
 
@@ -1600,8 +1600,8 @@ char *updateDescOfSVG(char *file, char *newDesc)
         // return returnStatus;
         if (writeSVGimage(image, file)) { // the image written is valid, then return success
             free(returnStatus);
-            returnStatus = (char *)calloc(33, sizeof(char));
-            strcpy(returnStatus, "Description successfully updated");
+            returnStatus = (char *)calloc(37, sizeof(char));
+            strcpy(returnStatus, "\"Description successfully updated\"");
         }
     }
 
@@ -1612,10 +1612,26 @@ char *updateDescOfSVG(char *file, char *newDesc)
     return returnStatus;
 }
 
-// char *validateSVGforServer(char *file)
-// {
+char *validateSVGforServer(char *file)
+{
+    SVGimage *image = createValidSVGimage(file, "parser/bin/svg.xsd");
+    bool checkValidity = validateSVGimage(image, "parser/bin/svg.xsd");
+    char *returnStr;
 
-// }
+    if (checkValidity) { // valid
+        returnStr = (char*) calloc(5, sizeof(char));
+        strcpy(returnStr, "true");
+    } else { // not valid
+        returnStr = (char*) calloc(6, sizeof(char));
+        strcpy(returnStr, "false");
+    }
+
+    if (image != NULL) {
+        deleteSVGimage(image);
+    }
+
+    return returnStr;
+}
 
 /* A3 Functions END */
 

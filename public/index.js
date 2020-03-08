@@ -84,7 +84,7 @@ $(document).ready(function () {
         content +=
           `<tr>
           <td colspan="7">
-            <h3>Upload a file here</h3>
+            <h3>Upload an SVG file here</h3>
             <form id="upload-svg" method="post" action="/upload" enctype="multipart/form-data">
               <label>Select an SVG to upload here: </label>
               <input type="file" name="svgIMG" id="SVG-file-browser" accept=".svg">
@@ -93,11 +93,23 @@ $(document).ready(function () {
             </form>
           </td>
         </tr>`;
+        // me trying to make the upload a little better (above is the old upload)
+        // `<tr>
+        //   <td colspan="7">
+        //     <h3>Upload an SVG file here</h3>
+        //     <form id="upload-svg">
+        //       <label>Select an SVG to upload here: </label>
+        //       <input type="file" name="svgIMG" id="SVG-file-browser" accept=".svg">
+        //       <br>
+        //       <input id="submitBtn" type="submit" value="Upload SVG" onclick="userUploadFile()">
+        //     </form>
+        //   </td>
+        // </tr>`;
 
         return content;
       });
 
-      $('#upload-svg').submit(function (event) {
+      $('#upload-svg').submit(function () {
         // alert('DABBERZZZ');
         if ($('#SVG-file-browser').val() == 0 || $('#SVG-file-browser').val() == null || $('#SVG-file-browser').val() == undefined) {
           alert("No file selected! Please select a file");
@@ -263,13 +275,85 @@ $(document).ready(function () {
 
               return content;
             });
+
+            // update the body of the edit title/desc table
+            $('#edit-title-desc-table').html(function () {
+              console.log("entered editing of title and desc table");
+              var content = '<tr>';
+              // title block
+              content += '<td>Title: </td>';
+              content +=
+                `<td>
+                    <div class="input-group mb-3">
+                      <input type="text" id="edit-title" class="form-control" value="${data.title}" aria-label="Recipient's username" aria-describedby="button-addon2">
+                      <div class="input-group-append">
+                        <button class="btn btn-outline-secondary title-submit" onclick="editTitle()" type="button" id="button-addon2">Save Edit</button>
+                      </div>
+                    </div>
+                </td>`;
+              content += '</tr>';
+
+              // desc block
+              content += '<td>Description: </td>';
+              content +=
+                `<td>
+                    <div class="input-group mb-3">
+                      <input type="text" id="edit-desc" class="form-control" value="${data.desc}" aria-label="Recipient's username" aria-describedby="button-addon2">
+                      <div class="input-group-append">
+                        <button class="btn btn-outline-secondary desc-submit" onclick="editDesc()" type="button" id="button-addon2">Save Edit</button>
+                      </div>
+                    </div>
+                </td>`;
+
+              console.log("EDITING TITLE AND DESC: " + JSON.stringify(data));
+              return content;
+            });
           },
           fail: function (error) {
             console.log("ERR in SVG Panel summary " + error);
           }
         });
 
+        // update the body of the edit title/desc table
+        // $('#edit-title-desc-table').append(function () {
+        //   console.log("entered editing of title and desc table");
+        //   var content = '<tr>';
+
+        //   var selectedVal = $('#svgSelector').children('option:selected').val();
+
+        //   $.ajax({
+        //     type: 'get',
+        //     dataType: 'json',
+        //     url: '/viewSVG/' + selectedVal,
+        //     success: function (data) {return data;},
+        //     fail: function (err) {
+        //       console.log("Something went wrong while getting info for editing title and desc " + err);
+        //       return null;
+        //     }
+        //   });
+
+        //   content += '<td>Title: </td';
+        //   content += 
+        //   `<td>
+        //     <div class="input-group mb-3">
+        //       <input type="text" class="form-control" value="${fileInfo.title}" aria-label="Recipient's username" aria-describedby="button-addon2">
+        //       <div class="input-group-append">
+        //         <button class="btn btn-outline-secondary" type="button" id="button-addon2">Save Edit</button>
+        //       </div>
+        //     </div>
+        //   </td>`;
+
+        //   content += '</tr>';
+        //   console.log("EDITING: " + fileInfo.data);
+        //   return content;
+        // });
+
       });
+
+      // $('#edit-title').submit(function (e) {
+      //   e.preventDefault();
+      //   alert("Woah there sally");
+      // });
 
       // Parse the drop down to display actual other attributes
       $('#showAttr').change(function () {
@@ -279,6 +363,7 @@ $(document).ready(function () {
         if ($(this).prop('selectedIndex') > 0) { // they need to pick an element whose elements to view
           // alert("DIE");
           // console.log($(this).prop('selectedIndex'));
+          $('#add-edit-attr-table').show("slow");
 
           var elementObj = {
             elemType: "", // empty at creation
@@ -300,7 +385,7 @@ $(document).ready(function () {
               console.log('Success out here');
 
               // returnVal is an array of objects so you for of to iterate through arrays and for in for objects
-              $('#add-edit-attr-table').append(showOtherAttr(returnVal)); // add the returned items as rows for each object;
+              $('#add-edit-attr-table').html(showOtherAttr(returnVal)); // add the returned items as rows for each object;
 
             },
             fail: function (error) {
@@ -308,6 +393,8 @@ $(document).ready(function () {
             }
           });
 
+        } else {
+          $('#add-edit-attr-table').slideUp("slow");
         }
         console.log("Printing index in the drop down: " + $(this).prop('selectedIndex'));
       });
@@ -318,8 +405,6 @@ $(document).ready(function () {
       console.log('Failed to load any images. ' + error);
     }
   });
-
-
 
 });
 
@@ -390,6 +475,38 @@ function createShowAttr(type, data) {
 
 }
 
+function userUploadFile() {
+  // this can work, might need to make this a $(form id here).submit(function (e) {do stuff});
+  // var file = $('#SVG-file-browser').files[0];
+  var file = $('#SVG-file-browser').prop('files');
+  if (file != null) {
+    console.log("printing file: " + file[0]);
+    console.log("printing filename: " + file[0].name);
+  }
+
+  $('#upload-svg').submit((e) => {
+    e.preventDefault();
+  })
+
+  alert("It works boi");
+  console.log("It works boi");
+  return;
+}
+
+// edit title
+function editTitle() {
+  // alert('WOWZERSSSSSSSSSSSSSSS');
+  var inputVal = $('#edit-title').val();
+  alert(inputVal);
+
+}
+
+// edit desc
+function editDesc() {
+  var inputVal = $('#edit-desc').val();
+  alert(inputVal);
+}
+
 // Get the other attributes from the element selected in the drop down menu
 function showOtherAttr(returnVal) {
   var content;
@@ -399,10 +516,9 @@ function showOtherAttr(returnVal) {
     content += `<td>${index.name}: </td>`;
     content += `<td>
                   <div class="input-group mb-3">
-                    <input type="text" class="form-control" placeholder="${index.value}" aria-label="Recipient's username" aria-describedby="button-addon2">
+                    <input type="text" class="form-control" value="${index.value}" aria-label="Recipient's username" aria-describedby="button-addon2">
                     <div class="input-group-append">
-                      <button class="btn btn-outline-secondary" formaction="" type="button" id="button-addon2">Save Edit</button>
-                      <button class="btn btn-outline-secondary" type="button" id="button-addon2">Cancel</button>
+                      <button class="btn btn-outline-secondary" type="button" id="button-addon2">Save Edit</button>
                     </div>
                 </div>
                 </td>`;
@@ -414,8 +530,9 @@ function showOtherAttr(returnVal) {
   return content;
 }
 
-function populateShowAttrDropDown (selectVal, elementObj) {
-  
+// populates object with items that will be inputted into the edit other attributes table
+function populateShowAttrDropDown(selectVal, elementObj) {
+
   elementObj.fileName = $('#svgSelector').children('option:selected').val();
   console.log("File chosen: " + elementObj.fileName);
 
