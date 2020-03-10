@@ -371,7 +371,7 @@ $(document).ready(function () {
             fileName: ""
           };
 
-          populateShowAttrDropDown(selectVal, elementObj);
+          populateShowAttrDropDown(selectVal, elementObj); // Gets the element that will be sent to the server in order to populate the edit/add other attributes table
 
           // send the parsed element to the server to receive their other attributes
           $.ajax({
@@ -550,7 +550,7 @@ function editDesc() {
   var filename = $('#svgSelector').children('option:selected').val();
   // send the data to the server that will call the C function
   $.ajax({
-    type: 'get', // POST Request
+    type: 'get', // GET Request (post doesn't work)
     dataType: 'json',
     url: '/updateDesc',
     data: {
@@ -571,14 +571,15 @@ function editDesc() {
 function showOtherAttr(returnVal) {
   var content;
 
-  for (index of returnVal) {
+  // content += "<tbody id='other-attr-edit-body'>";
+  for (index of returnVal) { // returnVal is the element's other attributes
     content += "<tr>";
     content += `<td>${index.name}: </td>`;
     content += `<td>
                   <div class="input-group mb-3">
-                    <input type="text" class="form-control" value="${index.value}" aria-label="Recipient's username" aria-describedby="button-addon2">
+                    <input type="text" class="form-control" value="${index.value}" aria-label="Recipient's username" aria-describedby="button-addon2" id="${index.name}-edit-value">
                     <div class="input-group-append">
-                      <button class="btn btn-outline-secondary" type="button" id="button-addon2">Save Edit</button>
+                      <button class="btn btn-outline-secondary" type="button" onclick="otherAttrEditSave('${index.name}')" id="button-addon2">Save Edit</button>
                     </div>
                 </div>
                 </td>`;
@@ -586,11 +587,12 @@ function showOtherAttr(returnVal) {
     // content += '<td></td>';
     content += "</tr>";
   }
+  // content += "</tbody>";
 
   return content;
 }
 
-// populates object with items that will be inputted into the edit other attributes table
+// populates object with items that will be inputted into the edit/add other attributes table
 function populateShowAttrDropDown(selectVal, elementObj) {
 
   elementObj.fileName = $('#svgSelector').children('option:selected').val();
@@ -624,6 +626,50 @@ function populateShowAttrDropDown(selectVal, elementObj) {
 }
 
 // handle save edit from add/edit other attrs
-function otherAttrEditSave() {
+function otherAttrEditSave(attrName) {
+  alert("You've clicked save edit.");
+  var attrNameVal = $(`#${attrName}-edit-value`).val();
+  console.log(attrName);
+  console.log(`Value in ${attrName} is ${attrNameVal}`);
+
+  // create an object that will be sent to the server to process
+  var elementObj = {
+    elemType: "",
+    index: 0,
+    fileName: "",
+    attr: attrName,
+    attrValue: attrNameVal
+  }
+  var selectVal = $('#showAttr').children('option:selected').val(); // get the element the user chose
+
+  populateShowAttrDropDown(selectVal, elementObj); // function fills in missing info for elementObj
+
+  console.log(JSON.stringify(elementObj));
+
+  $.ajax({
+    type: 'get', // GET Request (post doesn't work)
+    dataType: 'json',
+    url: '/updateOtherAttrs',
+    data: {
+      elementObj
+    },
+    success: function (data) {
+      // console.log()
+      if (data) {
+        alert('Successfully updated the attribute! Reloading...');
+        location.reload(true);
+        
+      } else {
+        alert('Failed to update the attribute.');
+      }
+    },
+    fail: function (err) {
+      console.log("Server failed to update other attributes. Err: " + err);
+    }
+  });
+}
+
+// this function will handle calling the server to add an other attribute the user wants
+function addOtherAttr() {
 
 }

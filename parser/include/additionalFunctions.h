@@ -39,6 +39,8 @@ char *getJSONforViewPanel (char *file);
 char *getJSONforOtherAttr(char *file, char *elementType, int elemIndex);
 char *updateTitleOfSVG(char *file, char *newTitle);
 char *updateDescOfSVG(char *file, char *newDesc);
+char *updateOtherAttribute(char *file, char *elemType, int elementIndex, char *newOtherAttr, char *newOtherAttrVal);
+char *updateElementAttribute(char *file, char *elemType, int elementIndex, char *newAttr, char *newAttrVal);
 char *validateSVGforServer(char *file);
 
 // A3 Functions END

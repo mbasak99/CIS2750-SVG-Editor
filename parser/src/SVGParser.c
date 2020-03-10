@@ -1495,6 +1495,7 @@ char *getJSONforOtherAttr(char *file, char *elementType, int elemIndex)
         ListIterator iterate;
         void *element;
 
+        // might have to do this for SVG_IMAGE itself
         if (strcmp("rect", elementType) == 0) {
             iterate = createIterator(image->rectangles);
         } else if (strcmp("circ", elementType) == 0) {
@@ -1612,6 +1613,68 @@ char *updateDescOfSVG(char *file, char *newDesc)
     return returnStatus;
 }
 
+char *updateOtherAttribute(char *file, char *elemType, int elementIndex, char *newOtherAttr, char *newOtherAttrVal)
+{
+    SVGimage *image = createValidSVGimage(file, "parser/bin/svg.xsd"); // create a valid image
+    char *returnStr = calloc(19, sizeof(char));
+    strcpy(returnStr, "\"invalid update\""); // default string it carries
+    elementType eleType;
+
+    // might have to do this for SVG_IMAGE itself
+    if (strcmp("rect", elemType) == 0) {
+        eleType = RECT;
+    } else if (strcmp("circ", elemType) == 0) {
+        eleType = CIRC;
+    } else if (strcmp("path", elemType) == 0) {
+        eleType = PATH;
+    } else if (strcmp("group", elemType) == 0) {
+        eleType = GROUP;
+    } /* else if (strcmp("svg", elemType) == 0) {
+        eleType = SVG_IMAGE;
+    } */
+
+    Attribute *newAttr = (Attribute *)calloc(1, sizeof(Attribute));
+    newAttr->name = (char *)calloc(strlen(newOtherAttr) + 1, sizeof(char));
+    newAttr->value = (char *)calloc(strlen(newOtherAttrVal) + 1, sizeof(char));
+    // printf("HERE 1\n");
+
+    strcpy(newAttr->name, newOtherAttr);
+    strcpy(newAttr->value, newOtherAttrVal);
+    // printf("HERE 2\n");
+
+    // set the attribute using A2 functions
+    setAttribute(image, eleType, elementIndex, newAttr);
+    // printf("HERE 3\n");
+
+    // make sure the image is validate after modifying it
+    if (validateSVGimage(image, "parser/bin/svg.xsd")) { //valid
+        free(returnStr);
+        returnStr = (char *)calloc(17, sizeof(char));
+        strcpy(returnStr, "\"valid update\"");
+        // write to file here
+        writeSVGimage(image, file);
+    }
+
+    if (image != NULL) {
+        deleteSVGimage(image);
+    }
+
+    return returnStr;
+}
+
+char *updateElementAttribute(char *file, char *elemType, int elementIndex, char *newAttr, char *newAttrVal)
+{
+    SVGimage *image = createValidSVGimage(file, "parser/bin/svg.xsd");
+    char *returnStr = calloc(19, sizeof(char));
+    strcpy(returnStr, "\"invalid update\"");
+
+    if (image != NULL) {
+        deleteSVGimage(image);
+    }
+
+    return returnStr;
+}
+
 char *validateSVGforServer(char *file)
 {
     SVGimage *image = createValidSVGimage(file, "parser/bin/svg.xsd");
@@ -1692,9 +1755,20 @@ void updatePathAttr(SVGimage *image, Attribute *newAttr, int elemIndex)
                 pathNode->data = (char *)calloc(strlen(newAttr->value) + 1, sizeof(char));
                 strcpy(pathNode->data, newAttr->value);
 
-                if (newAttr->name != NULL) free(newAttr->name);
-                if (newAttr->value != NULL) free(newAttr->value);
-                if (newAttr != NULL) free(newAttr);
+                if (newAttr->name != NULL) {
+                    free(newAttr->name);
+                    newAttr->name = NULL;
+                }
+
+                if (newAttr->value != NULL) {
+                    free(newAttr->value);
+                    newAttr->value = NULL;
+                }
+
+                if (newAttr != NULL) {
+                    free(newAttr);
+                    newAttr = NULL;
+                }
 
             } else { // if the user wants to update other attributes 
                 updateOtherAttr(pathNode->otherAttributes, newAttr);
@@ -1742,9 +1816,20 @@ void updateRectAttr(SVGimage *image, Attribute *newAttr, int elemIndex)
                 
                 }
 
-                if (newAttr->name != NULL) free(newAttr->name);
-                if (newAttr->value != NULL) free(newAttr->value);
-                if (newAttr != NULL) free(newAttr);
+                if (newAttr->name != NULL) {
+                    free(newAttr->name);
+                    newAttr->name = NULL;
+                }
+
+                if (newAttr->value != NULL) {
+                    free(newAttr->value);
+                    newAttr->value = NULL;
+                }
+                
+                if (newAttr != NULL) {
+                    free(newAttr);
+                    newAttr = NULL;
+                }
 
             } else { // if the user wants to update other attributes 
                 updateOtherAttr(rectNode->otherAttributes, newAttr);
@@ -1791,9 +1876,20 @@ void updateCircleAttr(SVGimage *image, Attribute *newAttr, int elemIndex)
 
                 }
 
-                if (newAttr->name != NULL) free(newAttr->name);
-                if (newAttr->value != NULL) free(newAttr->value);
-                if (newAttr != NULL) free(newAttr);
+                if (newAttr->name != NULL) {
+                    free(newAttr->name);
+                    newAttr->name = NULL;
+                }
+
+                if (newAttr->value != NULL) { 
+                    free(newAttr->value);
+                    newAttr->value = NULL;
+                }
+                
+                if (newAttr != NULL) { 
+                    free(newAttr);
+                    newAttr = NULL;
+                }
 
             } else { // if the user wants to update other attributes 
                 updateOtherAttr(circleNode->otherAttributes, newAttr);
@@ -1827,9 +1923,18 @@ void updateSVGAttr(SVGimage *image, Attribute *newAttr)
 
             }
 
-        if (newAttr->name != NULL) free(newAttr->name);
-        if (newAttr->value != NULL) free(newAttr->value);
-        if (newAttr != NULL) free(newAttr);
+        if (newAttr->name != NULL) {
+            free(newAttr->name);
+            newAttr->name = NULL;
+        }
+        if (newAttr->value != NULL) { 
+            free(newAttr->value);
+            newAttr->value = NULL;
+        }
+        if (newAttr != NULL) { 
+            free(newAttr);
+            newAttr = NULL;
+        }
 
     } else if (strcmp(newAttr->name, "desc") == 0) {
         // printf("entering desc\n");
@@ -1849,9 +1954,20 @@ void updateSVGAttr(SVGimage *image, Attribute *newAttr)
 
             }
 
-        if (newAttr->name != NULL) free(newAttr->name);
-        if (newAttr->value != NULL) free(newAttr->value);
-        if (newAttr != NULL) free(newAttr);
+        if (newAttr->name != NULL) {
+            free(newAttr->name);
+            newAttr->name = NULL;
+        }
+
+        if (newAttr->value != NULL) { 
+            free(newAttr->value);
+            newAttr->value = NULL;
+        }
+        
+        if (newAttr != NULL) { 
+            free(newAttr);
+            newAttr = NULL;
+        }
 
     } else if (strcmp(newAttr->name, "title") == 0) {
         // printf("entering title\n");
@@ -1870,9 +1986,18 @@ void updateSVGAttr(SVGimage *image, Attribute *newAttr)
 
             }
 
-        if (newAttr->name != NULL) free(newAttr->name);
-        if (newAttr->value != NULL) free(newAttr->value);
-        if (newAttr != NULL) free(newAttr);
+        if (newAttr->name != NULL) {
+            free(newAttr->name);
+            newAttr->name = NULL;
+        }
+        if (newAttr->value != NULL) { 
+            free(newAttr->value);
+            newAttr->value = NULL;
+        }
+        if (newAttr != NULL) { 
+            free(newAttr);
+            newAttr = NULL;
+        }
 
     } else {
         // printf("entering other\n");
@@ -1910,9 +2035,20 @@ void updateOtherAttr(List *listOfOtherAttr, Attribute *newAttr)
             } 
 
         } else {
-            if (newAttr->name != NULL) free(newAttr->name);
-            if (newAttr->value != NULL) free(newAttr->value);
-            if (newAttr != NULL) free(newAttr);
+            if (newAttr->name != NULL) {
+            free(newAttr->name);
+            newAttr->name = NULL;
+        }
+
+        if (newAttr->value != NULL) { 
+            free(newAttr->value);
+            newAttr->value = NULL;
+        }
+
+        if (newAttr != NULL) { 
+            free(newAttr);
+            newAttr = NULL;
+        }
             // newAttr = NULL;
             // newAttr->name = NULL;
             // newAttr->value = NULL;
@@ -2227,24 +2363,7 @@ bool areSVGAttrValid(SVGimage *image)
     List *rects = getRects(image);
     List *groups = getGroups(image);
     List *paths = getPaths(image);
-
-    // if (image->circles->length > 0) {
-
-    //     ListIterator circleIterator = createIterator(circles);
-    //     void *circleElement;
-    //     Circle *circleNode;
-
-    //     while ((circleElement = nextElement(&circleIterator))) {
-
-    //         circleNode
-
-    //     }
-
-    // }
-    // if (!areOtherAttrValid(circles)) return false;
-    // if (!areOtherAttrValid(rects)) return false;
-    // if (!areOtherAttrValid(groups)) return false;
-    // if (!areOtherAttrValid(paths)) return false;
+    
     if (!areOtherAttrValid(image->otherAttributes)) return false;
 
     freeListNotData(circles);
@@ -2258,168 +2377,6 @@ bool areSVGAttrValid(SVGimage *image)
     
     return true;
 }
-
-// bool areRectsInvalid(List *imageRects)
-// {
-
-//     if (imageRects == NULL) return true;
-
-//     if (imageRects->length > 0) {
-
-
-//         ListIterator rectIterator = createIterator(imageRects);
-//         void *rectElement;
-//         Rectangle *rectNode;
-
-//         while ((rectElement = nextElement(&rectIterator))) {
-
-//             rectNode = (Rectangle *)rectElement;
-
-//             if (rectNode->height < 0) return true;
-//             if (rectNode->width < 0) return true;
-//             if (rectNode->units == NULL) return true;
-//             if (rectNode->otherAttributes == NULL) return true;
-
-//             if (rectNode->otherAttributes->length > 0) {
-//                 if (areOtherAttrValid(rectNode->otherAttributes) == false) return true;
-//             }
-
-//         }
-
-//     }
-
-
-//     return false; // All rectangles passed the test
-// }
-
-// bool areCirclesInvalid(List *imageCircles)
-// {
-//     if (imageCircles == NULL) return true;
-
-//     if (imageCircles->length > 0) {
-
-
-//         ListIterator circleIterator = createIterator(imageCircles);
-//         void *circleElement;
-//         Circle *circleNode;
-
-//         while ((circleElement = nextElement(&circleIterator))) {
-
-//             circleNode = (Circle *)circleElement;
-
-//             if (circleNode->r < 0) return true;
-//             if (circleNode->units == NULL) return true;
-//             if (circleNode->otherAttributes == NULL) return true;
-            
-//             if (circleNode->otherAttributes->length > 0) {
-//                 if (areOtherAttrValid(circleNode->otherAttributes) == false) return true;
-//             }
-
-//         }
-
-//     }
-
-//     return false;
-// }
-
-// bool arePathsInvalid(List *imagePaths)
-// {
-//     if (imagePaths == NULL) return true;
-
-//     if (imagePaths->length > 0) {
-
-
-//         ListIterator pathIterator = createIterator(imagePaths);
-//         void *pathElement;
-//         Path *pathNode;
-
-//         while ((pathElement = nextElement(&pathIterator))) {
-
-//             pathNode = (Path *)pathElement;
-
-//             if (pathNode->data == NULL) return true;
-//             if (pathNode->otherAttributes == NULL) return true;
-
-//             if (pathNode->otherAttributes->length > 0) {
-//                 if (areOtherAttrValid(pathNode->otherAttributes) == false) return true;
-//             }
-
-//         }
-
-//     }
-
-//     return false;
-// }
-
-// bool isSVGInvalid(SVGimage *image)
-// {
-//     if (image == NULL) return true;
-
-//     if (strlen(image->namespace) == 0) return true;
-//     if (image->namespace == NULL) return true;
-
-//     if (image->title == NULL) return true;
-
-//     if (image->title == NULL) return true;
-
-//     if (image->circles == NULL) return true;
-//     if (image->rectangles == NULL) return true;
-//     if (image->groups == NULL) return true;
-//     if (image->paths == NULL) return true;
-//     if (image->otherAttributes == NULL) return true;
-    
-//     if (image->otherAttributes->length > 0) {
-//         if (areOtherAttrValid(image->otherAttributes) == false) return true;
-//     }
-
-//     return false;
-// }
-
-// bool areGroupsInvalid(List *imageGroups)
-// {
-//     if (imageGroups == NULL) return true;
-
-//     if (imageGroups->length > 0) {
-
-//         ListIterator groupIterator = createIterator(imageGroups);
-//         void *groupElement;
-//         Group *groupNode;
-
-//         while ((groupElement = nextElement(&groupIterator))) {
-
-//             groupNode = (Group *)groupElement;
-
-//             if (groupNode->circles == NULL) return true;
-//             if (groupNode->circles->length > 0) {
-//                 if (areCirclesInvalid(groupNode->circles) == false) return true;
-//             }
-
-//             if (groupNode->rectangles == NULL) return true;
-//             if (groupNode->rectangles->length > 0) {
-//                 if (areRectsInvalid(groupNode->rectangles) == false) return true;
-//             }
-
-//             if (groupNode->paths == NULL) return true;
-//             if (groupNode->paths->length > 0) {
-//                 if (arePathsInvalid(groupNode->paths) == false) return true;
-//             }
-
-//             if (groupNode->groups == NULL) return true;
-//             if (groupNode->groups->length > 0) {
-//                 if (areGroupsInvalid(groupNode->groups) == false) return true;
-//             }
-
-//             if (groupNode->otherAttributes == NULL) return true;
-//             if (groupNode->otherAttributes->length) {
-//                 if (areOtherAttrValid(groupNode->otherAttributes) == false) return true;
-//             }
-
-//         }
-
-//     }
-
-//     return false;
-// }
 
 bool imageViolatesConstraints(SVGimage *image)
 {   

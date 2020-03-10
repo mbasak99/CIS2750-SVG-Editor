@@ -29,7 +29,8 @@ const CLibrary = ffi.Library(__dirname + '/libsvgparse.so', {
   'getJSONforOtherAttr': ['string', ['string', 'string', 'int']],
   'validateSVGforServer': ['string', ['string']],
   'updateTitleOfSVG': ['string', ['string', 'string']],
-  'updateDescOfSVG': ['string', ['string', 'string']]
+  'updateDescOfSVG': ['string', ['string', 'string']],
+  'updateOtherAttribute': ['string', ['string', 'string', 'int', 'string', 'string']]
 });
 
 // Send HTML at root, do not change
@@ -68,7 +69,7 @@ app.post('/upload', function (req, res) {
 
   if (uploadFile == null) { // check if no files were sent in
     res.redirect('/');
-    res.status(500);
+    // res.status(500);
     return /* res.status(400).send('No files were uploaded.') */;
   }
 
@@ -79,7 +80,7 @@ app.post('/upload', function (req, res) {
     }
 
       /* CHECK IF THE UPLOAD FILE IS VALID HERE */
-    var isFileValid = CLibrary.validateSVGforServer();
+    var isFileValid = CLibrary.validateSVGforServer(__dirname + "/uploads/" + uploadFile.name);
 
     if (!isFileValid) { // if file isn't valid remove it
       return res.status(400).send("Invalid file upload");
@@ -219,11 +220,11 @@ app.get('/updateTitle', function (req, res) {
     }
   } catch (err) {
     console.log("Error in updateTitle: " + err);
+    return res.status(500).send(err);
   }
 });
 
 // sending new desc to be updated in SVG itself
-// sending new title to be updated in SVG itself
 app.get('/updateDesc', function (req, res) {
   try {
     var desc = req.query.desc;
@@ -239,6 +240,37 @@ app.get('/updateDesc', function (req, res) {
     }
   } catch (err) {
     console.log("Error in updateDesc: " + err);
+    return res.status(500).send(err);
+  }
+});
+
+// sending user updated other attribute to SVG file
+app.get('/updateOtherAttrs', function (req, res) {
+  var attrName = req.query.elementObj.attr;
+  var attrVal = req.query.elementObj.attrValue;
+  var elem = req.query.elementObj.elemType;
+  var index = req.query.elementObj.index;
+  var file = __dirname + "/uploads/" + req.query.elementObj.fileName;
+  try {
+    console.log("Attribute name: " + attrName);
+    console.log("Attribute value: " + attrVal);
+    console.log("Element is: " + elem);
+    console.log("Element index is: " + index);
+    console.log("File targeted is: " + file);
+    
+    var returnVal = CLibrary.updateOtherAttribute(file, elem, index, attrName, attrVal);
+
+    if (returnVal.includes("valid update")) { // updated and valid
+      res.send(true);
+      console.log("Success");
+    } else { // didn't update cuz invalid
+      res.send(false);
+      console.log("Failure");
+    }
+
+  } catch (err) {
+    console.log("Error in updateOtherAttrs. Err: " + err);
+    return res.status(500).send(err);
   }
 });
 
@@ -253,6 +285,7 @@ app.get('/viewSVG/:name', function (req, res) {
     res.send(summaryOfSVG);
   } catch (err) {
     console.log("Error in viewSVG: " + err);
+    return res.status(500).send(err);
   }
 });
 

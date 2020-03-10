@@ -144,7 +144,7 @@ thead tbody td {
 
 .desc p,
 .title p {
-    word-wrap: break-word;
+    word-wrap: anywhere;
 }
 
 .view-panel img {
