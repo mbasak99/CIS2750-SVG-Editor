@@ -104,9 +104,9 @@
                     <td id="otherAttr"><strong>Other Attributes</strong></td>
                 </tr>
                 <tr class="view-data">
-                    <td>Nothing to see here</td>
-                    <td>Nothing to see here</td>
-                    <td>Nothing to see here</td>
+                    <td>Please select an image</td>
+                    <td>Please select an image</td>
+                    <td>Please select an image</td>
                 </tr>
             </tbody>
             <tr>
@@ -125,7 +125,7 @@
                 <td colspan="7">Edit Title and Description</td>
             </thead>
             <tbody id="edit-title-desc-table">
-                
+
             </tbody>
         </table>
     </p>
@@ -136,7 +136,38 @@
                 <td colspan="7">Add/Edit Other Attributes of Selected Component</td>
             </thead>
             <tbody id="add-edit-attr-table">
-
+            </tbody>
+            <tr id='add-other-attr'>
+                <td colspan="7">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="inputGroup-sizing-default">New Other Attribute Name:
+                            </span>
+                        </div>
+                        <input id="add-other-attr-name" type="text" class="form-control"
+                            aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                    </div>
+                </td>
+            </tr>
+            <tbody>
+                <tr>
+                    <td colspan="7">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-sizing-default">New Other Attribute Value:
+                                </span>
+                            </div>
+                            <input id="add-other-attr-value" type="text" class="form-control"
+                                aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="7">
+                        <button onclick="addOtherAttr()" type="button" class="btn btn-success">Add New Other
+                            Attribute</button>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </p>

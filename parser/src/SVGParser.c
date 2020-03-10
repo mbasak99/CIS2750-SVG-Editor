@@ -1506,26 +1506,32 @@ char *getJSONforOtherAttr(char *file, char *elementType, int elemIndex)
             iterate = createIterator(image->groups);
         }
 
-        while ((element = nextElement(&iterate)) != NULL) {
-            
-            if (index == elemIndex) {
+        if (strcmp("svg", elementType) != 0) {
+            while ((element = nextElement(&iterate)) != NULL) {
+                
+                if (index == elemIndex) {
 
-                free(strToReturn); // free the "null" it contained
+                    free(strToReturn); // free the "null" it contained
 
-                if (strcmp("rect", elementType) == 0) {
-                    strToReturn = attrListToJSON(((Rectangle *)element)->otherAttributes);
-                } else if (strcmp("circ", elementType) == 0) {
-                    strToReturn = attrListToJSON(((Circle *)element)->otherAttributes);
-                } else if (strcmp("path", elementType) == 0) {
-                    strToReturn = attrListToJSON(((Path *)element)->otherAttributes);
-                } else if (strcmp("group", elementType) == 0) {
-                    strToReturn = attrListToJSON(((Group *)element)->otherAttributes);
+                    if (strcmp("rect", elementType) == 0) {
+                        strToReturn = attrListToJSON(((Rectangle *)element)->otherAttributes);
+                    } else if (strcmp("circ", elementType) == 0) {
+                        strToReturn = attrListToJSON(((Circle *)element)->otherAttributes);
+                    } else if (strcmp("path", elementType) == 0) {
+                        strToReturn = attrListToJSON(((Path *)element)->otherAttributes);
+                    } else if (strcmp("group", elementType) == 0) {
+                        strToReturn = attrListToJSON(((Group *)element)->otherAttributes);
+                    }
+
+                    break;
                 }
-
-                break;
+                
+                index++;
             }
-            
-            index++;
+        } else { // user wants to see svg's other attributes
+            free(strToReturn);
+
+            strToReturn = attrListToJSON(image->otherAttributes);
         }
     }
 
@@ -1629,9 +1635,9 @@ char *updateOtherAttribute(char *file, char *elemType, int elementIndex, char *n
         eleType = PATH;
     } else if (strcmp("group", elemType) == 0) {
         eleType = GROUP;
-    } /* else if (strcmp("svg", elemType) == 0) {
+    } else if (strcmp("svg", elemType) == 0) {
         eleType = SVG_IMAGE;
-    } */
+    }
 
     Attribute *newAttr = (Attribute *)calloc(1, sizeof(Attribute));
     newAttr->name = (char *)calloc(strlen(newOtherAttr) + 1, sizeof(char));
@@ -1647,12 +1653,12 @@ char *updateOtherAttribute(char *file, char *elemType, int elementIndex, char *n
     // printf("HERE 3\n");
 
     // make sure the image is validate after modifying it
-    if (validateSVGimage(image, "parser/bin/svg.xsd")) { //valid
+    if (validateSVGimage(image, "parser/bin/svg.xsd")) { // valid
         free(returnStr);
         returnStr = (char *)calloc(17, sizeof(char));
         strcpy(returnStr, "\"valid update\"");
-        // write to file here
-        writeSVGimage(image, file);
+
+        writeSVGimage(image, file); // write to file since it's valid
     }
 
     if (image != NULL) {
@@ -1661,6 +1667,8 @@ char *updateOtherAttribute(char *file, char *elemType, int elementIndex, char *n
 
     return returnStr;
 }
+
+// char *addOtherAttrToSVG(char *file)
 
 char *updateElementAttribute(char *file, char *elemType, int elementIndex, char *newAttr, char *newAttrVal)
 {

@@ -136,6 +136,10 @@ $(document).ready(function () {
         return content;
       });
 
+      // clear new other attr fields
+      $('#add-other-attr-name').val('');
+      $('#add-other-attr-value').val('');
+
       // createShowAttr(null); // creates a disabled drop down for other attributes
 
       // Need to get the index of chosen value in drop down
@@ -146,6 +150,39 @@ $(document).ready(function () {
 
         if ($(this).prop('selectedIndex') == 0) {
           // alert('ZERO WAS CHOSEN IT WORKS!');
+          $('.view-data-body').html(function (content) {
+            content += 
+            `<tr>
+              <td class="view-panel title"><strong>Title</strong></td>
+              <td colspan="2" class="view-panel desc"><strong>Description</strong></td>
+            </tr>
+            <tr>
+              <td class="title">Please select an image</td>
+              <td colspan="2" class="desc">Please select an image</td>
+            </tr>
+            <tr>
+              <td id="component"><strong>Component</strong></td>
+              <td id="summary"><strong>Summary</strong></td>
+              <td id="otherAttr"><strong>Other Attributes</strong></td>
+            </tr>
+            <tr class="view-data">
+              <td>Please select an image</td>
+              <td>Please select an image</td>
+              <td>Please select an image</td>
+            </tr>`;
+
+            return content;
+          });
+
+          $('#edit-title-desc-table').slideUp("slow");
+
+          $('#showAttr').html(function () {
+            var content = "<option>Please select an element's attribute to show</option>";
+            return content;
+          });
+
+          $('#add-edit-attr-table').slideUp('slow');
+
           return;
         }
 
@@ -314,40 +351,6 @@ $(document).ready(function () {
           }
         });
 
-        // update the body of the edit title/desc table
-        // $('#edit-title-desc-table').append(function () {
-        //   console.log("entered editing of title and desc table");
-        //   var content = '<tr>';
-
-        //   var selectedVal = $('#svgSelector').children('option:selected').val();
-
-        //   $.ajax({
-        //     type: 'get',
-        //     dataType: 'json',
-        //     url: '/viewSVG/' + selectedVal,
-        //     success: function (data) {return data;},
-        //     fail: function (err) {
-        //       console.log("Something went wrong while getting info for editing title and desc " + err);
-        //       return null;
-        //     }
-        //   });
-
-        //   content += '<td>Title: </td';
-        //   content += 
-        //   `<td>
-        //     <div class="input-group mb-3">
-        //       <input type="text" class="form-control" value="${fileInfo.title}" aria-label="Recipient's username" aria-describedby="button-addon2">
-        //       <div class="input-group-append">
-        //         <button class="btn btn-outline-secondary" type="button" id="button-addon2">Save Edit</button>
-        //       </div>
-        //     </div>
-        //   </td>`;
-
-        //   content += '</tr>';
-        //   console.log("EDITING: " + fileInfo.data);
-        //   return content;
-        // });
-
       });
 
       // $('#edit-title').submit(function (e) {
@@ -444,27 +447,27 @@ function createShowAttr(type, data) {
 
       //rectangles
       for (let i = 1; i <= data.rectList.length; i++) {
-        if (data.rectList[i - 1].numAttr > 0) { // only display elements in the drop down if they have other attributes
+        // if (data.rectList[i - 1].numAttr > 0) { // only display elements in the drop down if they have other attributes
           dropDownData += `<option>Rectangle ${i}</option>`;
-        }
+        // }
       }
 
       for (let i = 1; i <= data.circList.length; i++) {
-        if (data.circList[i - 1].numAttr > 0) { // only display elements in the drop down if they have other attributes
+        // if (data.circList[i - 1].numAttr > 0) { // only display elements in the drop down if they have other attributes
           dropDownData += `<option>Circle ${i}</option>`;
-        }
+        // }
       }
 
       for (let i = 1; i <= data.pathList.length; i++) {
-        if (data.pathList[i - 1].numAttr > 0) { // only display elements in the drop down if they have other attributes
+        // if (data.pathList[i - 1].numAttr > 0) { // only display elements in the drop down if they have other attributes
           dropDownData += `<option>Path ${i}</option>`;
-        }
+        // }
       }
 
       for (let i = 1; i <= data.groupList.length; i++) {
-        if (data.groupList[i - 1].numAttr > 0) { // only display elements in the drop down if they have other attributes
+        // if (data.groupList[i - 1].numAttr > 0) { // only display elements in the drop down if they have other attributes
           dropDownData += `<option>Group ${i}</option>`;
-        }
+        // }
       }
 
       $(this).prop("disabled", false);
@@ -572,6 +575,12 @@ function showOtherAttr(returnVal) {
   var content;
 
   // content += "<tbody id='other-attr-edit-body'>";
+  if (returnVal.length == 0) { // there are no other attributes in here
+    content += '<tr>';
+    content += "<td colspan='7'> There aren't any other attributes to edit here but you can add one below.</td>";
+    content += '</tr>';
+  }
+
   for (index of returnVal) { // returnVal is the element's other attributes
     content += "<tr>";
     content += `<td>${index.name}: </td>`;
@@ -622,6 +631,12 @@ function populateShowAttrDropDown(selectVal, elementObj) {
 
     elementObj.elemType = 'group'; // node server is going to send this into the C parser
     elementObj.index = parseInt(selectVal.slice('Group'.length + 1)) - 1; // grabs the index
+  } else if (selectVal.includes('SVG')) {
+    console.log(selectVal.slice(0, "SVG".length));
+    console.log("Should be index here:" + selectVal.slice('SVG'.length + 1));
+
+    elementObj.elemType = 'svg'; // node server is going to send this into the C parser
+    elementObj.index = parseInt(selectVal.slice('SVG'.length + 1)) - 1; // grabs the index
   }
 }
 
@@ -671,5 +686,48 @@ function otherAttrEditSave(attrName) {
 
 // this function will handle calling the server to add an other attribute the user wants
 function addOtherAttr() {
+  var elementObj = {
+    attr: "",
+    attrValue: "",
+    fileName: "",
+    elemType: "",
+    index: 0
+  }
+
+  elementObj.attr = $('#add-other-attr-name').val();
+  elementObj.attrValue = $('#add-other-attr-value').val();
+  console.log("Name: " + elementObj.attr);
+  console.log("Value: " + elementObj.attrValue);
+
+  
+  // get the component the new other attribute is being added to
+  var selectedComponent = $('#showAttr').prop('selectedIndex');
+  console.log("FROM ADD OTHER ATTR " + selectedComponent);
+  
+  if (selectedComponent == 0) { // prevent user from adding new other attribute without selecting file and image
+    alert("Please select an image and component to add to!");
+    return;
+  }
+  selectedComponent = $('#showAttr').children('option:selected').val(); // reassign to a string to allow the function below to parse it
+  // gets the elemType, index and file
+  populateShowAttrDropDown(selectedComponent, elementObj);
+  
+  console.log("FROM ADD OTHER ATTR obj " + elementObj.fileName);
+  console.log(JSON.stringify(elementObj));
+  
+  $.ajax({
+    type: 'get',
+    dataType: 'json',
+    url: '/updateOtherAttrs',
+    data: {
+      elementObj
+    },
+    success: function (res) {
+      console.log("Success in addOtherAttrs ajax call");
+    },
+    fail: function (err) {
+      console.log("Something went wrong contacting the server for addOtherAttrs. Err: " + err);
+    }
+  })
 
 }

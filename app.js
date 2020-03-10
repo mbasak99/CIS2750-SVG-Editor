@@ -274,6 +274,23 @@ app.get('/updateOtherAttrs', function (req, res) {
   }
 });
 
+// app.get('/addOtherAttrs', function (req, res) {
+//   console.log(`Inside addOtherAttrs got: ${req.query.elementObj.fileName}, ${req.query.elementObj.name}, ${req.query.elementObj.value}`);
+
+//   var attrName = req.query.elementObj.attr;
+//   var attrVal = req.query.elementObj.attrValue;
+//   var elem = req.query.elementObj.elemType;
+//   var index = req.query.elementObj.index;
+//   var file = __dirname + "/uploads/" + req.query.elementObj.fileName;
+
+//   try {
+//     CLibrary.updateOtherAttribute();
+//   } catch (err) {
+//     console.log("Error in addOtherAttrs. Err: " + err);
+//     res.status(500).send(err);
+//   }
+// });
+
 app.get('/viewSVG/:name', function (req, res) {
   var filename = req.params.name;
   console.log("WOW" + filename); // test
