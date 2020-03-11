@@ -149,43 +149,44 @@ $(document).ready(function () {
         var selectedVal = $(this).children('option:selected').val();
         console.log('You have chosen: ' + selectedVal);
         // console.log('You have chosen: ' + $(this).selectedIndex);
-
+        
+        $('#edit-main-attr-body').slideUp('slow'); // prevent the user from making invalid choices
+        $('#add-edit-attr-table').slideUp('slow');
+        
         if ($(this).prop('selectedIndex') == 0) {
           // alert('ZERO WAS CHOSEN IT WORKS!');
           $('.view-data-body').html(function (content) {
             content += 
             `<tr>
-              <td class="view-panel title"><strong>Title</strong></td>
-              <td colspan="2" class="view-panel desc"><strong>Description</strong></td>
+            <td class="view-panel title"><strong>Title</strong></td>
+            <td colspan="2" class="view-panel desc"><strong>Description</strong></td>
             </tr>
             <tr>
-              <td class="title">Please select an image</td>
-              <td colspan="2" class="desc">Please select an image</td>
+            <td class="title">Please select an image</td>
+            <td colspan="2" class="desc">Please select an image</td>
             </tr>
             <tr>
-              <td id="component"><strong>Component</strong></td>
-              <td id="summary"><strong>Summary</strong></td>
-              <td id="otherAttr"><strong>Other Attributes</strong></td>
+            <td id="component"><strong>Component</strong></td>
+            <td id="summary"><strong>Summary</strong></td>
+            <td id="otherAttr"><strong>Other Attributes</strong></td>
             </tr>
             <tr class="view-data">
-              <td>Please select an image</td>
-              <td>Please select an image</td>
-              <td>Please select an image</td>
+            <td>Please select an image</td>
+            <td>Please select an image</td>
+            <td>Please select an image</td>
             </tr>`;
-
+            
             return content;
           });
-
-          $('#edit-main-attr-body').slideUp('slow'); // prevent the user from making invalid choices
-
-          $('#edit-title-desc-table').slideUp("slow"); // prevent the user from making invalid choices
-
+          
+          
+          
           $('#showAttr').html(function () {
             var content = "<option>Please select an element's attribute to show</option>";
             return content;
           });
-
-          $('#add-edit-attr-table').slideUp('slow');
+          
+          $('#edit-title-desc-table').slideUp("slow"); // prevent the user from making invalid choices
 
           return;
         }
@@ -372,6 +373,7 @@ $(document).ready(function () {
           // alert("DIE");
           // console.log($(this).prop('selectedIndex'));
           $('#add-edit-attr-table').show("slow");
+          $('#edit-main-attr-body').show('slow');
 
           var elementObj = {
             elemType: "", // empty at creation
@@ -422,6 +424,7 @@ $(document).ready(function () {
 
         } else {
           $('#add-edit-attr-table').slideUp("slow");
+          $('#edit-main-attr-body').slideUp('slow');
         }
         console.log("Printing index in the drop down: " + $(this).prop('selectedIndex'));
       });
@@ -557,7 +560,7 @@ function editTitle() {
       console.log("updateTitle in server failed to update properly! Err: " + err);
     }
   });
-  console.log("went past wtf");
+  // console.log("went past wtf");
 }
 
 // edit desc
@@ -587,7 +590,7 @@ function editDesc() {
       file: filename
     },
     success: () => {
-      alert("You have successfully updated the desc for the chosen SVG");
+      alert("You have successfully updated the description for the chosen SVG");
       location.reload(true);
     },
     fail: function (err) {
@@ -706,7 +709,68 @@ function populateShowAttrDropDown(selectVal, elementObj) {
 
 // handle edit from edit of main attrs
 function mainAttrEdit(attrName) {
-  alert('mainAttrEdit ' + attrName);
+  var attrVal = $(`#${attrName}-main-attr`).val();
+  alert('mainAttrEdit ' + attrName + ":" + attrVal);
+
+  // handle if the user doesn't enter a number for attributes that only accept numbers
+  // if (isNaN(attrVal) && (attrName.includes('x') || attrName.includes('r') || attrName.includes('h') || attrName.includes('w'))) {
+  if (attrName.match(/[x | y | h | w | r]/) && isNaN(attrVal)) {
+    alert("You cannot enter alphabets in this field!");
+    return;
+  } else if (attrName.includes('units') && attrVal.match(/\d/)) {
+    alert('You can only enter alphabets in this field!');
+    return;
+  } /* else {
+    alert('Pass');
+  } */
+
+  let checkForNeg = parseFloat(attrVal);
+  if (attrName.match(/[h | w | r]/) && checkForNeg < 0) {
+    alert('This field does not accept values less than 0!');
+    return;
+  }
+
+  // change w and h to width and height respectively so C can ID and save it
+  if (attrName.match(/[w]/)) {
+    attrName = "width";
+  } else if (attrName.match(/[h]/)) {
+    attrName = "height";
+  }
+  
+  var elementObj = {
+    elemType: "",
+    index: 0,
+    fileName: "",
+    attr: attrName,
+    attrValue: attrVal
+  };
+
+  var selectVal = $('#showAttr').children('option:selected').val(); // get the element the user chose
+
+  populateShowAttrDropDown(selectVal, elementObj); // function fills in missing info for elementObj
+  console.log("elementObj: " + JSON.stringify(elementObj));
+
+  // call the server and ask it to write the changes to file
+  $.ajax({
+    type: 'get',
+    dataType: 'json',
+    url: '/updateOtherAttrs',
+    data: {
+      elementObj
+    },
+    success: function (data) {
+      if (data) {
+        alert('Successfully updated the attribute! Reloading...');
+        location.reload(true);
+      } else {
+        alert('Failed to update the attribute.');
+      }
+    },
+    fail: function (err) {
+      console.log('updateOtherAttrs call in mainAttrEdit had an error. Err: ' + err);
+    }
+  });
+
 }
 
 // handle save edit from add/edit other attrs
@@ -742,7 +806,6 @@ function otherAttrEditSave(attrName) {
       if (data) {
         alert('Successfully updated the attribute! Reloading...');
         location.reload(true);
-        
       } else {
         alert('Failed to update the attribute.');
       }
