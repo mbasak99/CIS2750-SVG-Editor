@@ -126,6 +126,8 @@ $(document).ready(function () {
       //   }
       // });
 
+      $('#factor-size').val(''); // clear any value
+
       // Need to update the values in the drop down
       $('#svgSelector').html(function (content) {
         content += '<option>Please select an image to view</option>';
@@ -174,7 +176,9 @@ $(document).ready(function () {
             return content;
           });
 
-          $('#edit-title-desc-table').slideUp("slow");
+          $('#edit-main-attr-body').slideUp('slow'); // prevent the user from making invalid choices
+
+          $('#edit-title-desc-table').slideUp("slow"); // prevent the user from making invalid choices
 
           $('#showAttr').html(function () {
             var content = "<option>Please select an element's attribute to show</option>";
@@ -305,6 +309,7 @@ $(document).ready(function () {
               // create a show attributes button
               if (data.rectList.length > 0 || data.circList.length > 0 || data.pathList.length > 0 || data.groupList.length > 0) { // there must be elements in order to show attributes
                 createShowAttr('exists', data);
+                // createShowMainAttr();
                 // createShowAttr(null);
               } else {
                 createShowAttr(null);
@@ -389,10 +394,29 @@ $(document).ready(function () {
 
               // returnVal is an array of objects so you for of to iterate through arrays and for in for objects
               $('#add-edit-attr-table').html(showOtherAttr(returnVal)); // add the returned items as rows for each object;
+              // alert(JSON.stringify(returnVal));
 
             },
             fail: function (error) {
-              console.log('Failed to send element data to server. ' + error);
+              console.log('Failed to get element data from server. ' + error);
+            }
+          });
+
+          // send the parsed element to the server to receive their main attributes
+          $.ajax({
+            type: 'get',
+            dataType: 'json',
+            url: '/getMainAttrs',
+            data: {
+              elementObj
+            },
+            success: function (returnVal) {
+              console.log('Successfully got info from server about main attrs');
+              // console.log("in edit main att elementObj: " + JSON.stringify(elementObj));
+              $('#edit-main-attr-body').html(showMainAttr(returnVal, elementObj.elemType));
+            },
+            fail: function (err) {
+              console.log('Failed to get element data from server for main attributes. ' + err);
             }
           });
 
@@ -413,7 +437,7 @@ $(document).ready(function () {
 
 // Populates the drop down menu
 function createShowAttr(type, data) {
-
+  // alert(JSON.stringify(data));
   if (type == null) { // no elements to display the attributes of
     alert('IN HERE');
     // dropDownData += '<tr class="view-data">';
@@ -436,6 +460,8 @@ function createShowAttr(type, data) {
     // dropDownData += `<td colspan="7">`;
     // dropDownData += '<select id="showAttr">';
     // dropDownData += "<option>Please select an element's attribute to show</option>";
+
+    // populates the other attributes table of a component
     $('#showAttr').html(function (dropDownData) {
       dropDownData += "<option>Please select an element's attribute to show</option>";
       // $(this).prop("disable", true);
@@ -570,6 +596,44 @@ function editDesc() {
   });
 }
 
+// Get the main attributes from the elmeent selected in the drop down menu
+function showMainAttr(returnValue, elemType) {
+  var content;
+
+  
+  // edit rect
+  // if (elemType.includes("rect")) {
+    // alert('YES BUD');
+    // console.log('Length of obj: ' + Object.keys(returnValue).length);
+    // if (Object.keys(returnValue).length == 0) {
+    //   alert("No keys here baby");
+    // }
+
+    for (const key in returnValue) {
+      if (key != "children" && key != "numAttr") {
+
+        content += "<tr>";
+        
+        content += `<td>${key}</td>`;
+        content += `
+        <td>
+        <div class="input-group mb-3">
+        <input type="text" class="form-control" value="${returnValue[key]}" aria-label="Recipient's username" aria-describedby="button-addon2" id="${key}-main-attr">
+        <div class="input-group-append">
+        <button class="btn btn-outline-secondary" type="button" onclick="mainAttrEdit('${key}')" id="button-addon2">Save Edit</button>
+        </div>
+        </div>
+        </td>`;
+        
+        content += "</tr>";
+      }
+    }
+  // }
+
+
+  return content;
+}
+
 // Get the other attributes from the element selected in the drop down menu
 function showOtherAttr(returnVal) {
   var content;
@@ -638,6 +702,11 @@ function populateShowAttrDropDown(selectVal, elementObj) {
     elementObj.elemType = 'svg'; // node server is going to send this into the C parser
     elementObj.index = parseInt(selectVal.slice('SVG'.length + 1)) - 1; // grabs the index
   }
+}
+
+// handle edit from edit of main attrs
+function mainAttrEdit(attrName) {
+  alert('mainAttrEdit ' + attrName);
 }
 
 // handle save edit from add/edit other attrs
@@ -730,4 +799,15 @@ function addOtherAttr() {
     }
   })
 
+}
+
+// handles the input from scale component
+function scaleFactor() {
+  var userIn = $('#factor-size').val();
+
+  if (isNaN(userIn)) {
+    alert("you didn't enter a NUM!!!!");
+  } else {
+    alert('you entered a number CONGRATS!!');
+  }
 }

@@ -181,6 +181,39 @@ app.get('/tableImage/:name', function (req, res) {
   });
 });
 
+//get main attributes of sent in element
+app.get('/getMainAttrs', function (req, res) {
+  console.log('Inside getMainAttrs, received: ' + req.query.elementObj.elemType + " index: " + req.query.elementObj.index);
+  var element = req.query.elementObj.elemType;
+  var index = req.query.elementObj.index;
+  var file = __dirname + '/uploads/' + req.query.elementObj.fileName;
+
+  try {
+    var returnVal = CLibrary.getJSONforViewPanel(file);
+    console.log(JSON.parse(returnVal));
+    var componentObj = JSON.parse(returnVal);
+
+    if (element.includes('rect')) {
+      // console.log(componentObj.rectList[index]);
+      res.send(componentObj.rectList[index]);
+    } else if (element.includes('circ')) {
+      res.send(componentObj.circList[index]);
+    } else if (element.includes('path')) {
+      res.send(componentObj.pathList[index]);
+    } else if (element.includes('group')) {
+      res.send(componentObj.groupList[index]);
+    }
+    
+    // if (returnVal != null) {
+    //   for (i = 0; )
+    //   res.send(returnVal);
+    // }
+  } catch (err) {
+    console.log('Error in getMainAttrs ' + err);
+    return res.status(500).send(err);
+  }
+});
+
 // get other attributes of sent in element
 app.get('/getOtherAttrs', function (req, res) {
   // console.log('Inside getOtherAttrs, received: ' + req.query.element + " " + req.query.elemIndex);

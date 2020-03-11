@@ -112,13 +112,14 @@
             <tr>
                 <td colspan="7">
                     <select id='showAttr' disabled>
-                        <option>Please select an element's attribute to show</option>
+                        <option>Please select an component to display their attributes</option>
                     </select>
                 </td>
             </tr>
         </table>
     </p>
 
+    <!-- Edit the current SVG's title and description here -->
     <p>
         <table class="table table-dark">
             <thead>
@@ -130,6 +131,19 @@
         </table>
     </p>
 
+    <!-- Ability to edit the main attributes of a component -->
+    <p>
+        <table class="table table-dark">
+            <thead>
+                <td colspan="7">Edit Attributes of Selected Component</td>
+            </thead>
+            <tbody id="edit-main-attr-body">
+                <!-- JS is going to dynamically insert things -->
+            </tbody>
+        </table>
+    </p>
+
+    <!-- Ability to add or edit other attributes of a component -->
     <p>
         <table class="table table-dark">
             <thead>
@@ -166,6 +180,45 @@
                     <td colspan="7">
                         <button onclick="addOtherAttr()" type="button" class="btn btn-success">Add New Other
                             Attribute</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </p>
+
+    <!-- Add shape to the image -->
+    <p>
+        <table class="table table-dark">
+            <thead>
+                <td colspan="7">Add a Shape to Current Component</td>
+            </thead>
+        </table>
+    </p>
+
+    <!-- Change the size of shapes in the SVG by some factor that the user selects -->
+    <p>
+        <table class="table table-dark">
+            <thead>
+                <td colspan="7">Scale a Shape Here:</td>
+            </thead>
+            <tbody id="image-scaler">
+                <tr>
+                    <td colspan="7">
+                        <select id='factor-component-list'>
+                            <option>Please select an element to adjust their scale</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="input-group mb-3">
+                            <input type="text" id="factor-size" class="form-control" placeholder="Enter an number here"
+                                aria-label="Recipient's username" aria-describedby="button-addon2">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" onclick="scaleFactor()" type="button"
+                                    id="button-addon2">OK</button>
+                            </div>
+                        </div>
                     </td>
                 </tr>
             </tbody>
