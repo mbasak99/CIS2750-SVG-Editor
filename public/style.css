@@ -118,7 +118,8 @@ thead tbody td {
     height: auto;
 }
 
-.log-data-body {
+.log-data-body,
+.view-data-body {
     overflow-y: auto;
     height: 600px;
     display: block;

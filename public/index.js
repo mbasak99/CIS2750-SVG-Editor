@@ -38,6 +38,10 @@ $(document).ready(function () {
   //   });
   // });
 
+  $('#new-svg-name').val('');
+  $('#new-svg-title').val('');
+  $('#new-svg-desc').val('');
+
   // Use the object sent from the server to update the website
   $.ajax({
     type: 'get', // Get Request
@@ -109,6 +113,21 @@ $(document).ready(function () {
         return content;
       });
 
+      // fill the files in file list in the add shapes list
+      $('#file-chooser-shape').html(function (content) {
+        if (data.list.length == 0) {
+          content += "<option>There are no files to choose from...</option>";
+        } else {
+          content += "<option>Please select the file to add to</option>";
+        }
+
+        for (const element of data.list) {
+          content += `<option>${element.fileName}</option>`;
+        }
+
+        return content;
+      });
+
       $('#upload-svg').submit(function () {
         // alert('DABBERZZZ');
         if ($('#SVG-file-browser').val() == 0 || $('#SVG-file-browser').val() == null || $('#SVG-file-browser').val() == undefined) {
@@ -145,19 +164,21 @@ $(document).ready(function () {
       // createShowAttr(null); // creates a disabled drop down for other attributes
 
       // Need to get the index of chosen value in drop down
+      $('#shape-list').prop('selectedIndex', 0);
       $('#svgSelector').change(function () {
         var selectedVal = $(this).children('option:selected').val();
         console.log('You have chosen: ' + selectedVal);
         // console.log('You have chosen: ' + $(this).selectedIndex);
-        
+
         $('#edit-main-attr-body').slideUp('slow'); // prevent the user from making invalid choices
         $('#add-edit-attr-table').slideUp('slow');
-        
+        // $('#shape-attr-input').slideUp('slow');
+
         if ($(this).prop('selectedIndex') == 0) {
           // alert('ZERO WAS CHOSEN IT WORKS!');
           $('.view-data-body').html(function (content) {
-            content += 
-            `<tr>
+            content +=
+              `<tr>
             <td class="view-panel title"><strong>Title</strong></td>
             <td colspan="2" class="view-panel desc"><strong>Description</strong></td>
             </tr>
@@ -175,17 +196,17 @@ $(document).ready(function () {
             <td>Please select an image</td>
             <td>Please select an image</td>
             </tr>`;
-            
+
             return content;
           });
-          
-          
-          
+
+
+
           $('#showAttr').html(function () {
             var content = "<option>Please select an element's attribute to show</option>";
             return content;
           });
-          
+
           $('#edit-title-desc-table').slideUp("slow"); // prevent the user from making invalid choices
 
           return;
@@ -392,7 +413,7 @@ $(document).ready(function () {
               elementObj
             },
             success: function (returnVal) {
-              console.log('Success out here');
+              console.log('Successfully displaying other attributes table');
 
               // returnVal is an array of objects so you for of to iterate through arrays and for in for objects
               $('#add-edit-attr-table').html(showOtherAttr(returnVal)); // add the returned items as rows for each object;
@@ -415,7 +436,7 @@ $(document).ready(function () {
             success: function (returnVal) {
               console.log('Successfully got info from server about main attrs');
               // console.log("in edit main att elementObj: " + JSON.stringify(elementObj));
-              $('#edit-main-attr-body').html(showMainAttr(returnVal, elementObj.elemType));
+              $('#edit-main-attr-body').html(showMainAttr(returnVal));
             },
             fail: function (err) {
               console.log('Failed to get element data from server for main attributes. ' + err);
@@ -429,10 +450,32 @@ $(document).ready(function () {
         console.log("Printing index in the drop down: " + $(this).prop('selectedIndex'));
       });
 
+      // $('#shape-list').change(function () {
+      //   $('#shape-attr-input').slideUp('slow'); // reset the current display input options since user changed option
+      //   // retrieve new input body
+
+      //   $('#shape-attr-input').html(showInputAddShape()); // change the body
+
+      //   if ($('#shape-list').prop('selectedIndex') != 0) {
+      //     $('#shape-attr-input').show('slow'); // bring the body back into view with updated inputs
+      //   }
+      // });
+
       console.log('Successfully loaded any images.');
     },
     fail: function (error) {
       console.log('Failed to load any images. ' + error);
+    }
+  });
+
+  $('#shape-list').change(function () {
+    $('#shape-attr-input').slideUp('slow'); // reset the current display input options since user changed option
+    // retrieve new input body
+
+    $('#shape-attr-input').html(showInputAddShape()); // change the body
+
+    if ($('#shape-list').prop('selectedIndex') > 0) {
+      $('#shape-attr-input').show('slow'); // bring the body back into view with updated inputs
     }
   });
 
@@ -477,25 +520,25 @@ function createShowAttr(type, data) {
       //rectangles
       for (let i = 1; i <= data.rectList.length; i++) {
         // if (data.rectList[i - 1].numAttr > 0) { // only display elements in the drop down if they have other attributes
-          dropDownData += `<option>Rectangle ${i}</option>`;
+        dropDownData += `<option>Rectangle ${i}</option>`;
         // }
       }
 
       for (let i = 1; i <= data.circList.length; i++) {
         // if (data.circList[i - 1].numAttr > 0) { // only display elements in the drop down if they have other attributes
-          dropDownData += `<option>Circle ${i}</option>`;
+        dropDownData += `<option>Circle ${i}</option>`;
         // }
       }
 
       for (let i = 1; i <= data.pathList.length; i++) {
         // if (data.pathList[i - 1].numAttr > 0) { // only display elements in the drop down if they have other attributes
-          dropDownData += `<option>Path ${i}</option>`;
+        dropDownData += `<option>Path ${i}</option>`;
         // }
       }
 
       for (let i = 1; i <= data.groupList.length; i++) {
         // if (data.groupList[i - 1].numAttr > 0) { // only display elements in the drop down if they have other attributes
-          dropDownData += `<option>Group ${i}</option>`;
+        dropDownData += `<option>Group ${i}</option>`;
         // }
       }
 
@@ -600,25 +643,25 @@ function editDesc() {
 }
 
 // Get the main attributes from the elmeent selected in the drop down menu
-function showMainAttr(returnValue, elemType) {
+function showMainAttr(returnValue) {
   var content;
 
-  
+
   // edit rect
   // if (elemType.includes("rect")) {
-    // alert('YES BUD');
-    // console.log('Length of obj: ' + Object.keys(returnValue).length);
-    // if (Object.keys(returnValue).length == 0) {
-    //   alert("No keys here baby");
-    // }
+  // alert('YES BUD');
+  // console.log('Length of obj: ' + Object.keys(returnValue).length);
+  // if (Object.keys(returnValue).length == 0) {
+  //   alert("No keys here baby");
+  // }
 
-    for (const key in returnValue) {
-      if (key != "children" && key != "numAttr") {
+  for (const key in returnValue) {
+    if (key != "children" && key != "numAttr") {
 
-        content += "<tr>";
-        
-        content += `<td>${key}</td>`;
-        content += `
+      content += "<tr>";
+
+      content += `<td>${key}</td>`;
+      content += `
         <td>
         <div class="input-group mb-3">
         <input type="text" class="form-control" value="${returnValue[key]}" aria-label="Recipient's username" aria-describedby="button-addon2" id="${key}-main-attr">
@@ -627,10 +670,10 @@ function showMainAttr(returnValue, elemType) {
         </div>
         </div>
         </td>`;
-        
-        content += "</tr>";
-      }
+
+      content += "</tr>";
     }
+  }
   // }
 
 
@@ -720,9 +763,10 @@ function mainAttrEdit(attrName) {
   } else if (attrName.includes('units') && attrVal.match(/\d/)) {
     alert('You can only enter alphabets in this field!');
     return;
-  } /* else {
-    alert('Pass');
-  } */
+  }
+  /* else {
+     alert('Pass');
+   } */
 
   let checkForNeg = parseFloat(attrVal);
   if (attrName.match(/[h | w | r]/) && checkForNeg < 0) {
@@ -736,7 +780,7 @@ function mainAttrEdit(attrName) {
   } else if (attrName.match(/[h]/)) {
     attrName = "height";
   }
-  
+
   var elementObj = {
     elemType: "",
     index: 0,
@@ -831,11 +875,11 @@ function addOtherAttr() {
   console.log("Name: " + elementObj.attr);
   console.log("Value: " + elementObj.attrValue);
 
-  
+
   // get the component the new other attribute is being added to
   var selectedComponent = $('#showAttr').prop('selectedIndex');
   console.log("FROM ADD OTHER ATTR " + selectedComponent);
-  
+
   if (selectedComponent == 0) { // prevent user from adding new other attribute without selecting file and image
     alert("Please select an image and component to add to!");
     return;
@@ -843,10 +887,10 @@ function addOtherAttr() {
   selectedComponent = $('#showAttr').children('option:selected').val(); // reassign to a string to allow the function below to parse it
   // gets the elemType, index and file
   populateShowAttrDropDown(selectedComponent, elementObj);
-  
+
   console.log("FROM ADD OTHER ATTR obj " + elementObj.fileName);
   console.log(JSON.stringify(elementObj));
-  
+
   $.ajax({
     type: 'get',
     dataType: 'json',
@@ -854,8 +898,14 @@ function addOtherAttr() {
     data: {
       elementObj
     },
-    success: function (res) {
+    success: function (data) {
       console.log("Success in addOtherAttrs ajax call");
+      if (data) {
+        alert('Successfully added a new other attribute! Reloading...');
+        location.reload(true);
+      } else {
+        alert('Failed to add a new other attribute.');
+      }
     },
     fail: function (err) {
       console.log("Something went wrong contacting the server for addOtherAttrs. Err: " + err);
@@ -864,13 +914,361 @@ function addOtherAttr() {
 
 }
 
+// show input options for add shape
+function showInputAddShape() {
+  var fileList = $('#file-chooser-shape').prop('selectedIndex');
+  var shapeList = $('#shape-list').prop('selectedIndex');
+
+  // check if the user selected valid options
+  if (fileList == 0 || shapeList == 0) {
+    // alert('Please select a file and shape to add');
+    return;
+  }
+
+  var content;
+  // $('#shape-attr-input').html(function (content) {
+  if (shapeList == 1) {
+    // console.log('woah');
+    // x input
+    content += "<tr>";
+    content += `<td colspan="7">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-sizing-default">X coordinate:
+                                </span>
+                            </div>
+                            <input id="add-shape-x-value" value="" placeholder="Please enter a number" type="text" class="form-control"
+                                aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" required>
+                        </div>
+                    </td>`;
+    content += "</tr>";
+
+    // y input
+    content += "<tr>";
+    content += `<td colspan="7">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-sizing-default">Y coordinate:
+                                </span>
+                            </div>
+                            <input id="add-shape-y-value" value="" placeholder="Please enter a number" type="text" class="form-control"
+                                aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" required>
+                        </div>
+                    </td>`;
+    content += "</tr>";
+
+    // w input
+    content += "<tr>";
+    content += `<td colspan="7">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-sizing-default">Width:
+                                </span>
+                            </div>
+                            <input id="add-shape-w-value" value="" placeholder="Please enter a non-negative number" type="text" class="form-control"
+                                aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" required>
+                        </div>
+                    </td>`;
+    content += "</tr>";
+
+    // h input
+    content += "<tr>";
+    content += `<td colspan="7">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-sizing-default">Height:
+                                </span>
+                            </div>
+                            <input id="add-shape-h-value" value="" placeholder="Please enter a non-negative number" type="text" class="form-control"
+                                aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" required>
+                        </div>
+                    </td>`;
+    content += "</tr>";
+
+    // units input
+    content += "<tr>";
+    content += `<td colspan="7">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-sizing-default">Units:
+                                </span>
+                            </div>
+                            <input id="add-shape-units-value" value="" type="text" class="form-control"
+                                aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                        </div>
+                    </td>`;
+    content += "</tr>";
+
+    // return content;
+  } else if (shapeList == 2) { // circle
+    // console.log('Howdy');
+    // cx input
+    content += "<tr>";
+    content += `<td colspan="7">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-sizing-default">CX coordinate:
+                                </span>
+                            </div>
+                            <input id="add-shape-cx-value" value="" placeholder="Please enter a number" type="text" class="form-control"
+                                aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" required>
+                        </div>
+                    </td>`;
+    content += "</tr>";
+
+    // cy input
+    content += "<tr>";
+    content += `<td colspan="7">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-sizing-default">CY coordinate:
+                                </span>
+                            </div>
+                            <input id="add-shape-cy-value" value="" placeholder="Please enter a number" type="text" class="form-control"
+                                aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" required>
+                        </div>
+                    </td>`;
+    content += "</tr>";
+
+    // r input
+    content += "<tr>";
+    content += `<td colspan="7">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-sizing-default">Radius:
+                                </span>
+                            </div>
+                            <input id="add-shape-r-value" value="" placeholder="Please enter a non-negative number" type="text" class="form-control"
+                                aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" required>
+                        </div>
+                    </td>`;
+    content += "</tr>";
+
+    // units input
+    content += "<tr>";
+    content += `<td colspan="7">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-sizing-default">Units:
+                                </span>
+                            </div>
+                            <input id="add-shape-units-value" value="" type="text" class="form-control"
+                                aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                        </div>
+                    </td>`;
+    content += "</tr>";
+  }
+
+  return content;
+  // });
+}
+
+// handles adding a shape from the user
+function addShape() {
+  var fileList = $('#file-chooser-shape').prop('selectedIndex');
+  var shapeList = $('#shape-list').prop('selectedIndex');
+
+  // check if the user selected valid options
+  if (fileList == 0 || shapeList == 0) {
+    alert('Please select a file and shape to add');
+    return;
+  }
+
+  var checkNums;
+  if (shapeList == 1) { // rect
+    var xVal = $('#add-shape-x-value').val();
+    var yVal = $('#add-shape-y-value').val();
+    var wVal = $('#add-shape-w-value').val();
+    var hVal = $('#add-shape-h-value').val();
+    checkNums = xVal + yVal + wVal + hVal;
+    // console.log(xVal);
+
+    if (wVal < 0 || hVal < 0) {
+      alert("Width and Height cannot be negative values!");
+      return;
+    }
+  } else { // circle
+    var cxVal = $('#add-shape-cx-value').val();
+    var cyVal = $('#add-shape-cy-value').val();
+    var rVal = $('#add-shape-r-value').val();
+    checkNums = cxVal + cyVal + rVal;
+
+    if (rVal < 0) {
+      alert("Radius cannot be a negative value!");
+      return;
+    }
+  }
+
+  var unitsVal = $('#add-shape-units-value').val();
+
+  if (checkNums.match(/[a-zA-Z | \s]/) || unitsVal.match(/[0-9]/)) { // check for invalid entries
+    alert("Please enter valid values!");
+    return;
+  }
+
+  var fileName = $('#file-chooser-shape').children('option:selected').val();
+  var shapeName = $('#shape-list').children('option:selected').val();
+
+  var shapeObj = {
+    component: "",
+    units: unitsVal,
+    fileName: fileName
+  };
+
+  if (shapeList == 1) { // rect
+    shapeName = 'rect';
+    shapeObj.x = xVal;
+    shapeObj.y = yVal;
+    shapeObj.w = wVal;
+    shapeObj.h = hVal;
+  } else { // circ
+    shapeName = 'circ';
+    shapeObj.cx = cxVal;
+    shapeObj.cy = cyVal;
+    shapeObj.r = rVal;
+  }
+
+  shapeObj.component = shapeName;
+  console.log(JSON.stringify(shapeObj));
+
+  $.ajax({
+    type: 'get',
+    dataType: 'json',
+    url: '/addNewComponent',
+    data: {
+      shapeObj
+    },
+    success: function (data) {
+      console.log('Success inside ajax of addShape ' + data);
+      if (data) {
+        alert("Successfully add new component to SVG file! Reloading...");
+        location.reload(true);
+      } else {
+        alert("Failed to add new component to SVG file.");
+      }
+    },
+    fail: function (err) {
+      console.log('Adding new component failed. Err: ' + err);
+    }
+  });
+
+  console.log(fileName);
+  console.log(shapeName);
+}
+
+// handles user input of new SVG
+function createNewSVG() {
+  var fileName = $('#new-svg-name').val();
+  var title = $('#new-svg-title').val();
+  var desc = $('#new-svg-desc').val();
+  if (fileName.length == 0) {
+    alert("File Name cannot be empty!");
+    return;
+  }
+
+  // for (i = 0; i < fileName.length; i++) {
+  //   if (char.match(/[\s]/)) {
+  //     char = '_';
+  //   }
+  // }
+  let str = fileName.replace(/[\s]/g, "_"); // replaces whitespace with underscores
+  fileName = str;
+  console.log('File Name is now: ' + fileName);
+
+  // add the .svg file type
+  fileName = fileName + '.svg';
+
+   // check if the file name already exists if it does tell the user to rename
+  $.ajax({
+    type: 'get', // Get Request
+    dataType: 'json',
+    url: '/allFiles', // The server path
+    success: function (data) {
+      if (data.length != null || data.length != undefined || data.length != 0) {
+        for (const file of data.list) {
+          if (file.fileName == fileName) {
+            alert("This file already exists! Please rename your file.");
+            return;
+          }
+        }
+
+        var SVGFile = {
+          file: fileName,
+          title: title,
+          desc: desc
+        };
+      
+        // call the server to create this new SVG file
+        $.ajax({
+          type: 'get',
+          dataType: 'json',
+          url: '/createSVG',
+          data: {
+            SVGFile
+          },
+          success: function (data) {
+            if (data) {
+              alert('Creating a new SVG file Succeeded! Reloading...');
+              location.reload(true);
+            } else {
+              alert('Creating a new SVG file failed.');
+            } 
+          },
+          fail: function (err) {
+            console.log("createNewSVG failed to create a new SVG! Err: " + err);
+          }
+        });
+      }
+    },
+    fail: function (err) {
+      console.log("createNewSVG failed to get all the files! Err: " + err);
+    }
+  });
+}
+
 // handles the input from scale component
 function scaleFactor() {
   var userIn = $('#factor-size').val();
+  var selectedShape = $('#factor-component-list').prop('selectedIndex');
+  var selectedSVG = $('#svgSelector').prop('selectedIndex');
 
-  if (isNaN(userIn)) {
-    alert("you didn't enter a NUM!!!!");
+  if (isNaN(userIn) || userIn == "" || userIn <= 0 || selectedShape == 0 || selectedSVG == 0) {
+    alert("That's an invalid entry.");
+    return;
   } else {
-    alert('you entered a number CONGRATS!!');
+    selectedShape = $('#factor-component-list').children('option:selected').val();
   }
+
+  selectedShape = selectedShape.slice("All".length + 1);
+
+  if (selectedShape == "Circles") {
+    selectedShape = "circ";
+  } else {
+    selectedShape = "rect";
+  }
+  var selectedSVG = $('#svgSelector').children('option:selected').val();
+
+  // call the server
+  $.ajax({
+    type: 'get',
+    dataType: 'json',
+    url: '/scaleShapes',
+    data: {
+      factor: userIn,
+      shape: selectedShape,
+      file: selectedSVG
+    },
+    success: function (data) {
+      alert('scalingShapes succeeded! Got: ' + data);
+      if (data) {
+        alert('Scaling Succeeded! Reloading...');
+        location.reload(true);
+      } else {
+        alert('Scaling failed.');
+      }
+    },
+    fail: function (err) {
+      console.log('Something went wrong trying to scale shapes. Err: ' + err);
+    }
+  });
 }

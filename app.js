@@ -30,7 +30,11 @@ const CLibrary = ffi.Library(__dirname + '/libsvgparse.so', {
   'validateSVGforServer': ['string', ['string']],
   'updateTitleOfSVG': ['string', ['string', 'string']],
   'updateDescOfSVG': ['string', ['string', 'string']],
-  'updateOtherAttribute': ['string', ['string', 'string', 'int', 'string', 'string']]
+  'updateOtherAttribute': ['string', ['string', 'string', 'int', 'string', 'string']],
+  'scaleShapes': ['string', ['string', 'string', 'string']],
+  'addCircleToSVG': ['string', ['string', 'string', 'string', 'string', 'string']],
+  'addRectToSVG': ['string', ['string', 'string', 'string', 'string', 'string', 'string']],
+  'createNewSVGfromUser': ['string', ['string', 'string', 'string']]
 });
 
 // Send HTML at root, do not change
@@ -335,6 +339,72 @@ app.get('/viewSVG/:name', function (req, res) {
     res.send(summaryOfSVG);
   } catch (err) {
     console.log("Error in viewSVG: " + err);
+    return res.status(500).send(err);
+  }
+});
+
+// add new shape to selected file
+app.get('/addNewComponent', function (req, res) {
+  
+  try {
+    var file = __dirname + '/uploads/' + req.query.shapeObj.fileName;
+    var units = req.query.shapeObj.units;
+    var returnVal;
+    if (req.query.shapeObj.component == "rect") {
+      console.log("RECTSSSZZZ");
+
+      let x = req.query.shapeObj.x;
+      let y = req.query.shapeObj.y;
+      let w = req.query.shapeObj.w;
+      let h = req.query.shapeObj.h;
+
+      returnVal = CLibrary.addRectToSVG(file, x, y, w, h, units);
+    } else {
+      console.log("CIRCLESSZZZ");
+
+      let cx = req.query.shapeObj.cx;
+      let cy = req.query.shapeObj.cy;
+      let r = req.query.shapeObj.r;
+
+      returnVal = CLibrary.addCircleToSVG(file, cx, cy, r, units);
+    }
+    
+    res.send(returnVal);
+  } catch (err) {
+    console.log("error in addNewComponent: " + err);
+    return res.status(500).send(err);
+  }
+});
+
+// create a new SVG file
+app.get('/createSVG', function (req, res) {
+  try {
+    var file = __dirname + '/uploads/' + req.query.SVGFile.file;
+    var title = req.query.SVGFile.title;
+    var desc = req.query.SVGFile.desc;
+    console.log(`Hello from createSVG file is ${file} title is ${title} and desc is ${desc}`);
+
+    var returnVal = CLibrary.createNewSVGfromUser(file, title, desc);
+    res.send(returnVal);
+  } catch (err) {
+    console.log("error in createSVG: " + err);
+    return res.status(500).send(err);
+  }
+});
+
+// change the size by factor for all same components
+app.get('/scaleShapes', function (req, res) {
+  try {
+    var factor = req.query.factor;
+    var shape = req.query.shape;
+    var file = __dirname + "/uploads/" +req.query.file;
+    console.log(`Got factor: ${factor}, shape: ${shape} and file: ${file}`);
+
+    var returnVal = CLibrary.scaleShapes(file, shape, factor);
+    console.log(returnVal);
+    // res.send(returnVal);
+  } catch (err) {
+    console.log("error in scalesShapes: " + err);
     return res.status(500).send(err);
   }
 });

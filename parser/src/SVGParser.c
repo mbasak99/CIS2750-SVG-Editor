@@ -1670,18 +1670,199 @@ char *updateOtherAttribute(char *file, char *elemType, int elementIndex, char *n
 
 // char *addOtherAttrToSVG(char *file)
 
-char *updateElementAttribute(char *file, char *elemType, int elementIndex, char *newAttr, char *newAttrVal)
+// char *updateElementAttribute(char *file, char *elemType, int elementIndex, char *newAttr, char *newAttrVal)
+// {
+//     SVGimage *image = createValidSVGimage(file, "parser/bin/svg.xsd");
+//     char *returnStr = calloc(19, sizeof(char));
+//     strcpy(returnStr, "\"invalid update\"");
+
+//     if (image != NULL) {
+//         deleteSVGimage(image);
+//     }
+
+//     return returnStr;
+// }
+char *scaleShapes(char *file, char *component, char *factor)
 {
     SVGimage *image = createValidSVGimage(file, "parser/bin/svg.xsd");
-    char *returnStr = calloc(19, sizeof(char));
-    strcpy(returnStr, "\"invalid update\"");
+    char *returnStr = calloc(6, sizeof(char));
+    strcpy(returnStr, "false");
+    List *allShapes;
 
     if (image != NULL) {
+        float factorNum = atof(factor);
+
+        if (strcmp(component, "rect") == 0) {
+            allShapes = getRects(image);
+        } else {
+            allShapes = getCircles(image);
+        }
+
+        if (allShapes != NULL) {
+            void *element;
+            ListIterator iterate = createIterator(allShapes);
+
+            while ((element = nextElement(&iterate)) != NULL) {
+                if (strcmp(component, "rect") == 0) {
+                    Rectangle *rect = (Rectangle *)element;
+                    rect->height = (rect->height)*factorNum;
+                    rect->width = (rect->width)*factorNum;
+                } else {
+                    Circle *circ = (Circle *)element;
+                    circ->r = (circ->r)*factorNum;
+                }
+            }
+
+            freeListNotData(allShapes);
+            free(allShapes);
+
+            if (validateSVGimage(image, "parser/bin/svg.xsd")) {
+                free(returnStr);
+                returnStr = calloc(5, sizeof(char));
+                strcpy(returnStr, "true");
+                writeSVGimage(image, file);
+            } 
+        }
+
         deleteSVGimage(image);
     }
 
     return returnStr;
 }
+
+char *addCircleToSVG(char *file, char *cx, char *cy, char *r, char *units)
+{
+    SVGimage *image = createValidSVGimage(file, "parser/bin/svg.xsd");
+    char *returnStr = calloc(6, sizeof(char));
+    strcpy(returnStr, "false");
+
+    if (image != NULL) { // init component
+        Circle *circle = malloc(sizeof(Circle));
+        circle->cx = atof(cx);
+        circle->cy = atof(cx);
+        circle->r = atof(r);
+        strcpy(circle->units, units);
+        circle->units[strlen(units)] = '\0';
+        circle->otherAttributes = initializeList(attributeToString, deleteAttribute, compareAttributes);
+        addComponent(image, CIRC, circle);
+
+        if (validateSVGimage(image, "parser/bin/svg.xsd")) {
+            free(returnStr);
+            returnStr = calloc(5, sizeof(char));
+            strcpy(returnStr, "true");
+            writeSVGimage(image, file);
+        }
+
+        deleteSVGimage(image);
+    }
+
+    return returnStr;
+}
+
+char *addRectToSVG(char *file, char *x, char *y, char *w, char *h, char *units)
+{
+    SVGimage *image = createValidSVGimage(file, "parser/bin/svg.xsd");
+    char *returnStr = calloc(6, sizeof(char));
+    strcpy(returnStr, "false");
+
+    if (image != NULL) { // init component
+        Rectangle *rect = malloc(sizeof(Rectangle));
+        rect->x = atof(x);
+        rect->y = atof(y);
+        rect->width = atof(w);
+        rect->height = atof(h);
+        strcpy(rect->units, units);
+        rect->units[strlen(units)] = '\0';
+        rect->otherAttributes = initializeList(attributeToString, deleteAttribute, compareAttributes);
+        addComponent(image, RECT, rect);
+
+        if (validateSVGimage(image, "parser/bin/svg.xsd")) {
+            free(returnStr);
+            returnStr = calloc(5, sizeof(char));
+            strcpy(returnStr, "true");
+            writeSVGimage(image, file);
+        }
+
+        deleteSVGimage(image);
+    }
+
+    return returnStr;
+}
+
+char *createNewSVGfromUser(char *file, char *title, char *desc)
+{
+    SVGimage *image = (SVGimage *)calloc(1, sizeof(SVGimage));
+    // char namespace[100] = "http://www.w3.org/2000/svg"; // hardcoded xml namespace
+    char *returnStr = calloc(6, sizeof(char));
+    strcpy(returnStr, "false");
+
+    if (image != NULL) {
+        strcpy(image->namespace, "http://www.w3.org/2000/svg");
+        
+        // add desc
+        if (strlen(desc) > 255) {
+
+            strncpy(image->description, desc, 255);
+            image->description[255] = '\0';
+
+        } else if (desc == NULL || strlen(desc) == 0) {
+
+            strcpy(image->description, "");
+
+        } else {
+
+            strcpy(image->description, desc);
+
+        }
+
+        // add title
+        if (strlen(title) > 255) {
+
+            strncpy(image->title, title, 255);
+            image->title[255] = '\0';
+
+        } else if (title == NULL || strlen(title) == 0) {
+
+            strcpy(image->title, "");
+
+        } else {
+
+            strcpy(image->title, title);
+
+        }
+
+        image->otherAttributes = initializeList(attributeToString, deleteAttribute, compareAttributes);
+        image->paths = initializeList(pathToString, deletePath, comparePaths);
+        image->circles = initializeList(circleToString, deleteCircle, compareCircles);
+        image->rectangles = initializeList(rectangleToString, deleteRectangle, compareRectangles);
+        image->groups = initializeList(groupToString, deleteGroup, compareGroups);
+
+        if (validateSVGimage(image, "parser/bin/svg.xsd")) {
+            free(returnStr);
+            returnStr = calloc(5, sizeof(char));
+            strcpy(returnStr, "true");
+            writeSVGimage(image, file);
+        }
+
+        deleteSVGimage(image);
+    }
+
+    return returnStr;
+}
+
+// char *addShapeToSVG(char *file, char *component, char *componentData)
+// {
+//     SVGimage *image = createValidSVGimage(file, "parser/bin/svg.xsd");
+//     char *returnStr = calloc(6, sizeof(char));
+//     strcpy(returnStr, "false");
+
+//     if (image != NULL) {
+        
+
+//         deleteSVGimage(image);
+//     }
+//     return returnStr;
+// }
 
 char *validateSVGforServer(char *file)
 {

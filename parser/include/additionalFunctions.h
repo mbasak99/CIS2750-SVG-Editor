@@ -40,7 +40,12 @@ char *getJSONforOtherAttr(char *file, char *elementType, int elemIndex);
 char *updateTitleOfSVG(char *file, char *newTitle);
 char *updateDescOfSVG(char *file, char *newDesc);
 char *updateOtherAttribute(char *file, char *elemType, int elementIndex, char *newOtherAttr, char *newOtherAttrVal);
-char *updateElementAttribute(char *file, char *elemType, int elementIndex, char *newAttr, char *newAttrVal);
+// char *updateElementAttribute(char *file, char *elemType, int elementIndex, char *newAttr, char *newAttrVal);
+char *scaleShapes(char *file, char *component, char *factor);
+// char *addShapeToSVG(char *file, char *component, char *componentData);
+char *addCircleToSVG(char *file, char *cx, char *cy, char *r, char *units);
+char *createNewSVGfromUser(char *file, char *title, char *desc);
+char *addRectToSVG(char *file, char *x, char *y, char *w, char *h, char *units);
 char *validateSVGforServer(char *file);
 
 // A3 Functions END
