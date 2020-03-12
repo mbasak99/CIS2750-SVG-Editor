@@ -1458,7 +1458,7 @@ char *getJSONofSVG (char *file)
 
 char *getJSONforViewPanel (char *file)
 {
-    SVGimage *image = createSVGimage(file);
+    SVGimage *image = createValidSVGimage(file, "parser/bin/svg.xsd");
     char *stringToReturn;
 
     if (image != NULL) {
@@ -1545,7 +1545,7 @@ char *getJSONforOtherAttr(char *file, char *elementType, int elemIndex)
 // Update the image's title, using the 
 char *updateTitleOfSVG(char *file, char *newTitle)
 {
-    SVGimage *image = createSVGimage(file);
+    SVGimage *image = createValidSVGimage(file, "parser/bin/svg.xsd");
     char *returnStatus = (char *)calloc(27, sizeof(char));
     strcpy(returnStatus, "\"Title failed to update\"");
 
@@ -1583,7 +1583,7 @@ char *updateTitleOfSVG(char *file, char *newTitle)
 
 char *updateDescOfSVG(char *file, char *newDesc) 
 {
-    SVGimage *image = createSVGimage(file);
+    SVGimage *image = createValidSVGimage(file, "parser/bin/svg.xsd");
     char *returnStatus = (char *)calloc(33, sizeof(char));
     strcpy(returnStatus, "\"Description failed to update\"");
 
@@ -1622,8 +1622,9 @@ char *updateDescOfSVG(char *file, char *newDesc)
 char *updateOtherAttribute(char *file, char *elemType, int elementIndex, char *newOtherAttr, char *newOtherAttrVal)
 {
     SVGimage *image = createValidSVGimage(file, "parser/bin/svg.xsd"); // create a valid image
-    char *returnStr = calloc(19, sizeof(char));
-    strcpy(returnStr, "\"invalid update\""); // default string it carries
+    char *returnStr = calloc(6, sizeof(char));
+    // strcpy(returnStr, "\"invalid update\""); // default string it carries
+    strcpy(returnStr, "false"); // default string it carries
     elementType eleType;
 
     // might have to do this for SVG_IMAGE itself
@@ -1655,8 +1656,8 @@ char *updateOtherAttribute(char *file, char *elemType, int elementIndex, char *n
     // make sure the image is validate after modifying it
     if (validateSVGimage(image, "parser/bin/svg.xsd")) { // valid
         free(returnStr);
-        returnStr = (char *)calloc(17, sizeof(char));
-        strcpy(returnStr, "\"valid update\"");
+        returnStr = (char *)calloc(5, sizeof(char));
+        strcpy(returnStr, "true");
 
         writeSVGimage(image, file); // write to file since it's valid
     }
@@ -1664,7 +1665,8 @@ char *updateOtherAttribute(char *file, char *elemType, int elementIndex, char *n
     if (image != NULL) {
         deleteSVGimage(image);
     }
-
+    // printf(returnStr);
+    // printf("\n");
     return returnStr;
 }
 
@@ -1831,11 +1833,35 @@ char *createNewSVGfromUser(char *file, char *title, char *desc)
 
         }
 
+        // create these attributes in order to see new shapes added to new svg by default
+        Attribute *height = (Attribute *)calloc(1, sizeof(Attribute));
+        Attribute *width = (Attribute *)calloc(1, sizeof(Attribute));
+        Attribute *viewBox = (Attribute *)calloc(1, sizeof(Attribute));
+
+        height->name = calloc(7, sizeof(char));
+        height->value = calloc(5, sizeof(char));
+        strcpy(height->name, "height");
+        strcpy(height->value, "20cm");
+
+        width->name = calloc(6, sizeof(char));
+        width->value = calloc(5, sizeof(char));
+        strcpy(width->name, "width");
+        strcpy(width->value, "10cm");
+
+        viewBox->name = calloc(8, sizeof(char));
+        viewBox->value = calloc(13, sizeof(char));
+        strcpy(viewBox->name, "viewBox");
+        strcpy(viewBox->value, "0 0 1200 600");
+
         image->otherAttributes = initializeList(attributeToString, deleteAttribute, compareAttributes);
         image->paths = initializeList(pathToString, deletePath, comparePaths);
         image->circles = initializeList(circleToString, deleteCircle, compareCircles);
         image->rectangles = initializeList(rectangleToString, deleteRectangle, compareRectangles);
         image->groups = initializeList(groupToString, deleteGroup, compareGroups);
+
+        insertBack(image->otherAttributes, height);
+        insertBack(image->otherAttributes, width);
+        insertBack(image->otherAttributes, viewBox);
 
         if (validateSVGimage(image, "parser/bin/svg.xsd")) {
             free(returnStr);

@@ -60,9 +60,9 @@ body::-webkit-scrollbar {
     width: 0.25rem;
 }
 
-body::-webkit-scrollbar-track {
+/* body::-webkit-scrollbar-track {
     background: #1e1e24;
-}
+} */
 
 body::-webkit-scrollbar-thumb {
     background: #6649b8;
@@ -76,7 +76,7 @@ input[button] {
 /* TABLE FORMATTING */
 table/* ,
 td */ {
-    width: 100%; /* This allows for the .table-title to work */
+    max-width: 100%; /* This allows for the .table-title to work */
     border: 3px solid black;
     text-align: center;
 }
@@ -89,7 +89,7 @@ td {
 .table-title { 
     text-align: center;
     column-span: all; /* Allows it to be as wide as all the columns */
-    border: 3px solid black;
+    /* border: 3px solid black; */
 }
 
 .title {
@@ -121,7 +121,7 @@ thead tbody td {
 .log-data-body,
 .view-data-body {
     overflow-y: auto;
-    height: 600px;
+    max-height: 600px;
     display: block;
 }
 
@@ -150,6 +150,6 @@ thead tbody td {
 
 .view-panel img {
     width: 100%;
-    max-width: 750px;
+    max-width: 800px;
     height: auto;
 }

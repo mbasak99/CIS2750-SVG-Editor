@@ -86,8 +86,15 @@ app.post('/upload', function (req, res) {
       /* CHECK IF THE UPLOAD FILE IS VALID HERE */
     var isFileValid = CLibrary.validateSVGforServer(__dirname + "/uploads/" + uploadFile.name);
 
-    if (!isFileValid) { // if file isn't valid remove it
-      return res.status(400).send("Invalid file upload");
+    if (isFileValid == false) { // if file isn't valid remove it
+      // return res.status(400).send("Invalid file upload");
+      try {
+        // remove file
+        fs.unlinkSync('/uploads/' + uploadFile.name);
+        console.log('Deleted invalid file');
+      } catch (err) { 
+        console.error('Failed to delete invalid file. Err: ' + err);
+      }
     }
 
     res.redirect('/');
@@ -296,8 +303,9 @@ app.get('/updateOtherAttrs', function (req, res) {
     console.log("File targeted is: " + file);
     
     var returnVal = CLibrary.updateOtherAttribute(file, elem, index, attrName, attrVal);
+    returnVal = JSON.parse(returnVal);
 
-    if (returnVal.includes("valid update")) { // updated and valid
+    if (returnVal == true) { // updated and valid
       res.send(true);
       console.log("Success");
     } else { // didn't update cuz invalid

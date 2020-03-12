@@ -67,6 +67,14 @@ $(document).ready(function () {
 
         content += '</tr>';
 
+        if (data.list == 0) {
+          content += "<tr>";
+
+          content += "<td colspan=7><h3>There are no files uploaded</h3></td>";
+
+          content += "</tr>";
+        }
+
         for (const element of data.list) {
           // use innerHTML for td and outerHTML when handling another SVG
           content += '<tr class="log-data">';
@@ -129,7 +137,6 @@ $(document).ready(function () {
       });
 
       $('#upload-svg').submit(function () {
-        // alert('DABBERZZZ');
         if ($('#SVG-file-browser').val() == 0 || $('#SVG-file-browser').val() == null || $('#SVG-file-browser').val() == undefined) {
           alert("No file selected! Please select a file");
           // event.preventDefault();
@@ -175,7 +182,6 @@ $(document).ready(function () {
         // $('#shape-attr-input').slideUp('slow');
 
         if ($(this).prop('selectedIndex') == 0) {
-          // alert('ZERO WAS CHOSEN IT WORKS!');
           $('.view-data-body').html(function (content) {
             content +=
               `<tr>
@@ -380,19 +386,11 @@ $(document).ready(function () {
 
       });
 
-      // $('#edit-title').submit(function (e) {
-      //   e.preventDefault();
-      //   alert("Woah there sally");
-      // });
-
       // Parse the drop down to display actual other attributes
       $('#showAttr').change(function () {
-        // alert("HELLO MAM");
         var selectVal = $(this).children('option:selected').val();
         console.log('You have chosen DAB: ' + selectVal);
         if ($(this).prop('selectedIndex') > 0) { // they need to pick an element whose elements to view
-          // alert("DIE");
-          // console.log($(this).prop('selectedIndex'));
           $('#add-edit-attr-table').show("slow");
           $('#edit-main-attr-body').show('slow');
 
@@ -417,7 +415,6 @@ $(document).ready(function () {
 
               // returnVal is an array of objects so you for of to iterate through arrays and for in for objects
               $('#add-edit-attr-table').html(showOtherAttr(returnVal)); // add the returned items as rows for each object;
-              // alert(JSON.stringify(returnVal));
 
             },
             fail: function (error) {
@@ -483,15 +480,15 @@ $(document).ready(function () {
 
 // Populates the drop down menu
 function createShowAttr(type, data) {
-  // alert(JSON.stringify(data));
   if (type == null) { // no elements to display the attributes of
-    alert('IN HERE');
+    // alert('There are no attributes to display.');
     // dropDownData += '<tr class="view-data">';
     // dropDownData += `<td colspan="7">`;
     // dropDownData += '<select id="showAttr" disabled>';
     $('#showAttr').html(function (content) {
-      content += "<option>There are no elements to display the attributes of</option>";
-      $(this).prop("disabled", true);
+      content += "<option>Please select an element's attribute to show</option>";
+      content += '<option>SVG</option>';
+      // $(this).prop("disabled", true);
       return content;
     });
     // dropDownData += '</select>';
@@ -515,7 +512,10 @@ function createShowAttr(type, data) {
 
       // do <option></option> per attr shown of each element (probably in a for loop) and don't add to list if it has no 
 
-      // rect, circ, path, group
+      // rect, circ, path, group and svg
+
+      // SVG
+      dropDownData += '<option>SVG</option>';
 
       //rectangles
       for (let i = 1; i <= data.rectList.length; i++) {
@@ -1178,7 +1178,7 @@ function createNewSVG() {
   // add the .svg file type
   fileName = fileName + '.svg';
 
-   // check if the file name already exists if it does tell the user to rename
+  // check if the file name already exists if it does tell the user to rename
   $.ajax({
     type: 'get', // Get Request
     dataType: 'json',
@@ -1197,7 +1197,7 @@ function createNewSVG() {
           title: title,
           desc: desc
         };
-      
+
         // call the server to create this new SVG file
         $.ajax({
           type: 'get',
@@ -1212,7 +1212,7 @@ function createNewSVG() {
               location.reload(true);
             } else {
               alert('Creating a new SVG file failed.');
-            } 
+            }
           },
           fail: function (err) {
             console.log("createNewSVG failed to create a new SVG! Err: " + err);
@@ -1232,8 +1232,11 @@ function scaleFactor() {
   var selectedShape = $('#factor-component-list').prop('selectedIndex');
   var selectedSVG = $('#svgSelector').prop('selectedIndex');
 
-  if (isNaN(userIn) || userIn == "" || userIn <= 0 || selectedShape == 0 || selectedSVG == 0) {
+  if (isNaN(userIn) || userIn == "" || userIn <= 0) {
     alert("That's an invalid entry.");
+    return;
+  } else if (selectedShape == 0 || selectedSVG == 0) {
+    alert("Please select an SVG file and the component to scale.");
     return;
   } else {
     selectedShape = $('#factor-component-list').children('option:selected').val();
