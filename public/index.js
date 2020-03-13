@@ -146,12 +146,6 @@ $(document).ready(function () {
         // console.log('STOP!!!');
       });
 
-      // $('#SVG-file-browser').submit(function () {
-      //   if ($(this).files.length == 0) {
-      //     alert('NO FILES');
-      //   }
-      // });
-
       $('#factor-size').val(''); // clear any value
 
       // Need to update the values in the drop down
@@ -217,10 +211,6 @@ $(document).ready(function () {
 
           return;
         }
-
-        // if (selectedVal == 'Please select an image to view') { // does nothing is user switches back to invalid index
-        //   return;
-        // }
 
         // Update the SVG View Panel with SVG summaries
         $.ajax({
