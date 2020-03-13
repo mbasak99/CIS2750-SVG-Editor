@@ -77,6 +77,16 @@ app.post('/upload', function (req, res) {
     return /* res.status(400).send('No files were uploaded.') */;
   }
 
+  var existingFiles = fs.readdirSync(__dirname + "/uploads/");
+  console.log(existingFiles);
+  for (const file of existingFiles) {
+    console.log(file);
+    if (file == uploadFile.name) {
+      // console.log('Same file doodz');
+      return res.redirect('/');
+    }
+  }
+
   // Use the mv() method to place the file somewhere on your server
   uploadFile.mv('uploads/' + uploadFile.name, function (err) {
     if (err) {
@@ -88,13 +98,13 @@ app.post('/upload', function (req, res) {
 
     if (isFileValid == false) { // if file isn't valid remove it
       // return res.status(400).send("Invalid file upload");
-      try {
-        // remove file
-        fs.unlinkSync('/uploads/' + uploadFile.name);
-        console.log('Deleted invalid file');
-      } catch (err) { 
-        console.error('Failed to delete invalid file. Err: ' + err);
-      }
+      // try {
+      //   // remove file
+      //   fs.unlinkSync(__dirname +  '/uploads/' + uploadFile.name);
+      //   console.log('Deleted invalid file');
+      // } catch (err) { 
+      //   console.error('Failed to delete invalid file. Err: ' + err);
+      // }
     }
 
     res.redirect('/');
@@ -103,10 +113,10 @@ app.post('/upload', function (req, res) {
 
 //Respond to GET requests for files in the uploads/ directory
 app.get('/uploads/:name', function (req, res) {
-  console.log('entered');
+  // console.log('entered');
   fs.stat('uploads/' + req.params.name, function (err, stat) {
     if (err == null) {
-      console.log(path.join(__dirname + '/uploads/' + req.params.name));
+      // console.log(path.join(__dirname + '/uploads/' + req.params.name));
       // res.send(path.join(__dirname + '/uploads/' + req.params.name));
       res.sendFile(path.join(__dirname + '/uploads/' + req.params.name));
     } else {
@@ -141,9 +151,9 @@ app.get('/allFiles', function (req, res) {
       let svgObject = JSON.parse(returnVal);
 
       if (svgObject === null) {
-        console.log('getJSONofSVG returned null. ' + svgObject);
+        // console.log('getJSONofSVG returned null. ' + svgObject);
       } else {
-        console.log('getJSONofSVG returned: ' + JSON.stringify(svgObject));
+        // console.log('getJSONofSVG returned: ' + JSON.stringify(svgObject));
         // console.log('getJSONofSVG returned: ' + JSON.parse(svgObject));
 
         // create 
@@ -163,11 +173,11 @@ app.get('/allFiles', function (req, res) {
 
     });
 
-    console.log('\nfileObjToSend contains: ' + JSON.stringify(fileObjToSend));
+    // console.log('\nfileObjToSend contains: ' + JSON.stringify(fileObjToSend));
     
-    if (fileObjToSend.length === 0) { // no files
-      console.log('Howdy do');
-    }
+    // if (fileObjToSend.length === 0) { // no files
+    //   console.log('Howdy do');
+    // }
 
     // Export files to client side so the site can be populated with the files
     res.send({
@@ -179,10 +189,10 @@ app.get('/allFiles', function (req, res) {
 // get path links for displaying the image and download link in the table
 //Respond to GET requests for files in the uploads/ directory
 app.get('/tableImage/:name', function (req, res) {
-  console.log('entered');
+  // console.log('entered');
   fs.stat('uploads/' + req.params.name, function (err, stat) {
     if (err == null) {
-      console.log(path.join(__dirname + '/uploads/' + req.params.name));
+      // console.log(path.join(__dirname + '/uploads/' + req.params.name));
       res.send(path.join(__dirname + '/uploads/' + req.params.name));
       // res.sendFile(path.join(__dirname + '/uploads/' + req.params.name));
     } else {
@@ -194,14 +204,14 @@ app.get('/tableImage/:name', function (req, res) {
 
 //get main attributes of sent in element
 app.get('/getMainAttrs', function (req, res) {
-  console.log('Inside getMainAttrs, received: ' + req.query.elementObj.elemType + " index: " + req.query.elementObj.index);
+  // console.log('Inside getMainAttrs, received: ' + req.query.elementObj.elemType + " index: " + req.query.elementObj.index);
   var element = req.query.elementObj.elemType;
   var index = req.query.elementObj.index;
   var file = __dirname + '/uploads/' + req.query.elementObj.fileName;
 
   try {
     var returnVal = CLibrary.getJSONforViewPanel(file);
-    console.log(JSON.parse(returnVal));
+    // console.log(JSON.parse(returnVal));
     var componentObj = JSON.parse(returnVal);
 
     if (element.includes('rect')) {
@@ -228,7 +238,7 @@ app.get('/getMainAttrs', function (req, res) {
 // get other attributes of sent in element
 app.get('/getOtherAttrs', function (req, res) {
   // console.log('Inside getOtherAttrs, received: ' + req.query.element + " " + req.query.elemIndex);
-  console.log('Inside getOtherAttrs, received: ' + req.query.elementObj.elemType + " index: " + req.query.elementObj.index);
+  // console.log('Inside getOtherAttrs, received: ' + req.query.elementObj.elemType + " index: " + req.query.elementObj.index);
   var elemType = req.query.elementObj.elemType;
   var elemIndex = req.query.elementObj.index;
   var fileName = req.query.elementObj.fileName;
@@ -236,9 +246,9 @@ app.get('/getOtherAttrs', function (req, res) {
   try {
     var dirToIMG = path.join(__dirname + '/uploads/' + fileName);
     // console.log("Dir is: " + __dirname + '/uploads/' + fileName);
-    console.log("Dir is: " + dirToIMG);
+    // console.log("Dir is: " + dirToIMG);
     var returnVal = CLibrary.getJSONforOtherAttr(dirToIMG, elemType, elemIndex);
-    console.log(`Return of getJSONforOtherAttr: ${returnVal}`);
+    // console.log(`Return of getJSONforOtherAttr: ${returnVal}`);
     if (returnVal != null) {
       res.send(returnVal);
     }
@@ -255,10 +265,10 @@ app.get('/updateTitle', function (req, res) {
     var file = path.join(__dirname + '/uploads/' + req.query.file);
     // console.log("Received the title: " + title);
     if (title != null) { // user actually wanted to change something
-      console.log("Received the title: " + title);
-      console.log("Filename is: " + file);
+      // console.log("Received the title: " + title);
+      // console.log("Filename is: " + file);
       var returnVal = CLibrary.updateTitleOfSVG(file, title);
-      console.log('Return value from updateTitle is: ' + returnVal);
+      // console.log('Return value from updateTitle is: ' + returnVal);
 
       res.send(returnVal);
     }
@@ -275,10 +285,10 @@ app.get('/updateDesc', function (req, res) {
     var file = path.join(__dirname + '/uploads/' + req.query.file);
     // console.log("Received the title: " + title);
     if (desc != null) { // user actually wanted to change something
-      console.log("Received the desc: " + desc);
-      console.log("Filename is: " + file);
+      // console.log("Received the desc: " + desc);
+      // console.log("Filename is: " + file);
       var returnVal = CLibrary.updateDescOfSVG(file, desc);
-      console.log('Return value from updateDesc is: ' + returnVal);
+      // console.log('Return value from updateDesc is: ' + returnVal);
 
       res.send(returnVal);
     }
@@ -296,21 +306,21 @@ app.get('/updateOtherAttrs', function (req, res) {
   var index = req.query.elementObj.index;
   var file = __dirname + "/uploads/" + req.query.elementObj.fileName;
   try {
-    console.log("Attribute name: " + attrName);
-    console.log("Attribute value: " + attrVal);
-    console.log("Element is: " + elem);
-    console.log("Element index is: " + index);
-    console.log("File targeted is: " + file);
+    // console.log("Attribute name: " + attrName);
+    // console.log("Attribute value: " + attrVal);
+    // console.log("Element is: " + elem);
+    // console.log("Element index is: " + index);
+    // console.log("File targeted is: " + file);
     
     var returnVal = CLibrary.updateOtherAttribute(file, elem, index, attrName, attrVal);
     returnVal = JSON.parse(returnVal);
 
     if (returnVal == true) { // updated and valid
       res.send(true);
-      console.log("Success");
+      // console.log("Success");
     } else { // didn't update cuz invalid
       res.send(false);
-      console.log("Failure");
+      // console.log("Failure");
     }
 
   } catch (err) {
@@ -338,12 +348,12 @@ app.get('/updateOtherAttrs', function (req, res) {
 
 app.get('/viewSVG/:name', function (req, res) {
   var filename = req.params.name;
-  console.log("WOW" + filename); // test
+  // console.log("WOW" + filename); // test
   try {
     let returnVal = CLibrary.getJSONforViewPanel(__dirname + '/uploads/' + filename);
     // console.log(returnVal);
     let summaryOfSVG = JSON.parse(returnVal);
-    console.log(JSON.stringify(summaryOfSVG));
+    // console.log(JSON.stringify(summaryOfSVG));
     res.send(summaryOfSVG);
   } catch (err) {
     console.log("Error in viewSVG: " + err);
@@ -359,7 +369,7 @@ app.get('/addNewComponent', function (req, res) {
     var units = req.query.shapeObj.units;
     var returnVal;
     if (req.query.shapeObj.component == "rect") {
-      console.log("RECTSSSZZZ");
+      // console.log("RECTSSSZZZ");
 
       let x = req.query.shapeObj.x;
       let y = req.query.shapeObj.y;
@@ -368,7 +378,7 @@ app.get('/addNewComponent', function (req, res) {
 
       returnVal = CLibrary.addRectToSVG(file, x, y, w, h, units);
     } else {
-      console.log("CIRCLESSZZZ");
+      // console.log("CIRCLESSZZZ");
 
       let cx = req.query.shapeObj.cx;
       let cy = req.query.shapeObj.cy;
@@ -390,7 +400,7 @@ app.get('/createSVG', function (req, res) {
     var file = __dirname + '/uploads/' + req.query.SVGFile.file;
     var title = req.query.SVGFile.title;
     var desc = req.query.SVGFile.desc;
-    console.log(`Hello from createSVG file is ${file} title is ${title} and desc is ${desc}`);
+    // console.log(`Hello from createSVG file is ${file} title is ${title} and desc is ${desc}`);
 
     var returnVal = CLibrary.createNewSVGfromUser(file, title, desc);
     res.send(returnVal);
@@ -406,11 +416,11 @@ app.get('/scaleShapes', function (req, res) {
     var factor = req.query.factor;
     var shape = req.query.shape;
     var file = __dirname + "/uploads/" +req.query.file;
-    console.log(`Got factor: ${factor}, shape: ${shape} and file: ${file}`);
+    // console.log(`Got factor: ${factor}, shape: ${shape} and file: ${file}`);
 
     var returnVal = CLibrary.scaleShapes(file, shape, factor);
-    console.log(returnVal);
-    // res.send(returnVal);
+    // console.log(returnVal);
+    res.send(returnVal);
   } catch (err) {
     console.log("error in scalesShapes: " + err);
     return res.status(500).send(err);

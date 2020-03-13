@@ -49,7 +49,7 @@ $(document).ready(function () {
     url: '/allFiles', // The server path
     success: function (data) { // Got the info
       console.log(data);
-      console.log("data");
+      // console.log("data");
 
       // update the table with the data I just received
       $('.log-data-body').html(function (content) {
@@ -563,16 +563,15 @@ function userUploadFile() {
     e.preventDefault();
   })
 
-  alert("It works boi");
+  // alert("It works boi");
   console.log("It works boi");
   return;
 }
 
 // edit title
 function editTitle() {
-  // alert('WOWZERSSSSSSSSSSSSSSS');
   var inputVal = $('#edit-title').val();
-  alert(inputVal);
+  // alert(inputVal);
   if (inputVal.length > 255) { // if the string the user entered is greater than the specs allows truncate the extra
     console.log("Title will be truncated: " + inputVal.slice(0, 255));
     if (confirm("Title will be truncated to: " + inputVal.slice(0, 255))) {
@@ -609,7 +608,7 @@ function editTitle() {
 // edit desc
 function editDesc() {
   var inputVal = $('#edit-desc').val();
-  alert(inputVal);
+  // alert(inputVal);
   if (inputVal.length > 255) { // if the string the user entered is greater than the specs allows truncate the extra
     console.log("Desc will be truncated: " + inputVal.slice(0, 255));
     if (confirm("Desc will be truncated to: " + inputVal.slice(0, 255))) {
@@ -645,15 +644,6 @@ function editDesc() {
 // Get the main attributes from the elmeent selected in the drop down menu
 function showMainAttr(returnValue) {
   var content;
-
-
-  // edit rect
-  // if (elemType.includes("rect")) {
-  // alert('YES BUD');
-  // console.log('Length of obj: ' + Object.keys(returnValue).length);
-  // if (Object.keys(returnValue).length == 0) {
-  //   alert("No keys here baby");
-  // }
 
   for (const key in returnValue) {
     if (key != "children" && key != "numAttr") {
@@ -753,7 +743,6 @@ function populateShowAttrDropDown(selectVal, elementObj) {
 // handle edit from edit of main attrs
 function mainAttrEdit(attrName) {
   var attrVal = $(`#${attrName}-main-attr`).val();
-  alert('mainAttrEdit ' + attrName + ":" + attrVal);
 
   // handle if the user doesn't enter a number for attributes that only accept numbers
   // if (isNaN(attrVal) && (attrName.includes('x') || attrName.includes('r') || attrName.includes('h') || attrName.includes('w'))) {
@@ -764,9 +753,6 @@ function mainAttrEdit(attrName) {
     alert('You can only enter alphabets in this field!');
     return;
   }
-  /* else {
-     alert('Pass');
-   } */
 
   let checkForNeg = parseFloat(attrVal);
   if (attrName.match(/[h | w | r]/) && checkForNeg < 0) {
@@ -819,7 +805,7 @@ function mainAttrEdit(attrName) {
 
 // handle save edit from add/edit other attrs
 function otherAttrEditSave(attrName) {
-  alert("You've clicked save edit.");
+  // alert("You've clicked save edit.");
   var attrNameVal = $(`#${attrName}-edit-value`).val();
   console.log(attrName);
   console.log(`Value in ${attrName} is ${attrNameVal}`);
@@ -921,7 +907,6 @@ function showInputAddShape() {
 
   // check if the user selected valid options
   if (fileList == 0 || shapeList == 0) {
-    // alert('Please select a file and shape to add');
     return;
   }
 
@@ -1262,7 +1247,7 @@ function scaleFactor() {
       file: selectedSVG
     },
     success: function (data) {
-      alert('scalingShapes succeeded! Got: ' + data);
+      // alert('scalingShapes succeeded! Got: ' + data);
       if (data) {
         alert('Scaling Succeeded! Reloading...');
         location.reload(true);
